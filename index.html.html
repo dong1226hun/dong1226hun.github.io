@@ -1,0 +1,1266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>의학용어 공부하기 최종본</title>
+<style>
+:root {
+  --bg:#f4f7ff; --ink:#172033; --muted:#64748b; --card:#fff;
+  --p:#6d5dfc; --p2:#00bcd4; --line:#e5e7eb; --bad:#ef4444; --ok:#16a34a;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",Segoe UI,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(109,93,252,.26), transparent 32%),
+    radial-gradient(circle at 92% 12%, rgba(0,188,212,.24), transparent 30%),
+    linear-gradient(135deg,#f8f4ff,#e9fbff 55%,#f7fbff);
+  min-height:100vh;
+}
+.wrap { max-width:1120px; margin:auto; padding:22px; }
+.hero {
+  position:relative; overflow:hidden;
+  background:rgba(255,255,255,.88); border:1px solid rgba(255,255,255,.9);
+  border-radius:34px; padding:34px; box-shadow:0 20px 50px rgba(20,30,60,.12);
+}
+.hero::after {
+  content:"RN"; position:absolute; right:24px; top:6px;
+  font-size:132px; line-height:1; font-weight:950; letter-spacing:-.08em;
+  color:rgba(109,93,252,.08); pointer-events:none;
+}
+h1 { margin:0; font-size:clamp(38px,7vw,64px); letter-spacing:-.07em; line-height:1.02; }
+p { color:var(--muted); line-height:1.55; }
+.heroChips { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.heroChips span {
+  display:inline-flex; border:1px solid #e9d5ff; background:#fff; color:var(--p);
+  border-radius:999px; padding:8px 12px; font-weight:900; font-size:13px;
+}
+.status { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; position:relative; z-index:1; }
+.stat { background:white; border:1px solid var(--line); border-radius:18px; padding:14px; transition:.15s; }
+.stat:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(20,30,60,.08); }
+.stat b { font-size:26px; }
+.meta, .stat span, small { color:var(--muted); }
+.tabs, .tools, .actions { display:flex; gap:10px; flex-wrap:wrap; margin:16px 0; }
+button, select, input {
+  font:inherit; border-radius:14px; border:1px solid var(--line); padding:11px 14px; background:white;
+}
+button { cursor:pointer; font-weight:800; box-shadow:0 8px 20px rgba(20,30,60,.06); }
+button.primary, .tabs button.active-tab {
+  color:white; border:0; background:linear-gradient(135deg,var(--p),var(--p2));
+  box-shadow:0 12px 26px rgba(109,93,252,.22);
+}
+button.bad { color:var(--bad); background:#fff5f5; }
+button.ok { color:var(--ok); background:#f0fdf4; }
+select,input { flex:1; min-width:180px; }
+.panel {
+  background:rgba(255,255,255,.90); border:1px solid rgba(255,255,255,.9);
+  border-radius:28px; padding:18px; box-shadow:0 14px 36px rgba(20,30,60,.08);
+}
+.mode { display:none; }
+.mode.on { display:block; }
+.study-stack { display:grid; grid-template-columns:1fr; gap:16px; }
+.card {
+  min-height:430px; border:1px solid var(--line); background:
+    radial-gradient(circle at top left, rgba(109,93,252,.08), transparent 34%), #fff;
+  border-radius:28px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:28px;
+}
+.card.wrong-marked {
+  border-color:rgba(239,68,68,.45);
+  background:radial-gradient(circle at top left, rgba(239,68,68,.10), transparent 34%), #fff7f7;
+}
+.badge {
+  padding:7px 10px; border-radius:999px; background:#f1efff; color:var(--p);
+  font-weight:900; box-shadow:0 8px 18px rgba(109,93,252,.10);
+}
+.question { font-size:clamp(42px,8vw,72px); font-weight:950; letter-spacing:-.06em; margin:16px 0; word-break:keep-all; color:#111827; }
+.answer { display:none; font-size:clamp(30px,6vw,52px); font-weight:950; color:var(--p); margin-top:12px; line-height:1.35; }
+.answer .subanswer { display:block; font-size:18px; font-weight:500; color:var(--muted); margin-top:8px; letter-spacing:0; }
+.progress { font-weight:900; color:var(--muted); margin-bottom:10px; }
+.list { max-height:360px; overflow:auto; display:grid; gap:8px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); align-items:start; }
+.item { border:1px solid var(--line); background:white; border-radius:14px; padding:10px; cursor:pointer; min-height:72px; }
+.item.active { outline:3px solid rgba(109,93,252,.25); }
+.item b { display:block; }
+.qrow { background:white; border:1px solid var(--line); border-radius:16px; padding:13px; margin-bottom:10px; }
+.qrow summary { cursor:pointer; font-weight:400; font-size:18px; }
+.qrow .ans { margin-top:10px; color:var(--p); font-weight:700; }
+.qrow.wrong-marked { border-color:rgba(239,68,68,.45); background:#fff7f7; }
+.qrow.wrong-marked summary::after {
+  content:"오답"; display:inline-flex; margin-left:8px; padding:4px 8px; border-radius:999px;
+  background:rgba(239,68,68,.12); color:var(--bad); font-size:12px; font-weight:900;
+}
+.wrong-saved { display:none; margin-left:8px; color:var(--bad); font-size:13px; font-weight:900; }
+.qrow.wrong-marked .wrong-saved { display:inline; }
+.quiz-part { margin-top:8px; color:var(--muted); font-size:14px; }
+.quiz-part b { color:var(--ink); font-weight:800; }
+.notice { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:16px; padding:12px; margin:12px 0; }
+.random-top-panel { margin-bottom:16px; }
+.random-top-row { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+.random-top-row p { margin:4px 0 0; }
+.random-top-row button { min-width:190px; }
+@media(max-width:800px) {
+  .status { grid-template-columns:1fr; }
+  .list { grid-template-columns:1fr; max-height:340px; }
+  .question { font-size:42px; }
+  .answer { font-size:30px; }
+  .random-top-row button { width:100%; }
+}
+
+/* 오답노트 파트별 비율 */
+.wrong-stats-box {
+  margin: 8px 0 18px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+.wrong-stats-box h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  letter-spacing: -.03em;
+}
+.wrong-stats {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.wrong-stat-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 1.1fr) minmax(120px, 2fr) 92px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fbfdff;
+}
+.wrong-stat-name {
+  font-weight: 900;
+}
+.wrong-stat-count {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 3px;
+}
+.wrong-stat-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: #eef2f7;
+  overflow: hidden;
+}
+.wrong-stat-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--bad), #f97316);
+}
+.wrong-stat-rate {
+  text-align: right;
+  font-weight: 950;
+  color: var(--bad);
+}
+.wrong-stats-empty {
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: var(--muted);
+  border: 1px dashed #cbd5e1;
+}
+@media(max-width:720px) {
+  .wrong-stat-row {
+    grid-template-columns: 1fr;
+  }
+  .wrong-stat-rate {
+    text-align: left;
+  }
+}
+
+
+/* 오답분석 별도 칸 */
+.analysis-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.analysis-head h2 {
+  margin:0 0 6px;
+  font-size:26px;
+  letter-spacing:-.03em;
+}
+.analysis-head p {
+  margin:0;
+}
+.analysis-summary {
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:10px;
+  margin-bottom:16px;
+}
+.analysis-stat {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+}
+.analysis-stat b {
+  display:block;
+  font-size:26px;
+  letter-spacing:-.04em;
+}
+.analysis-stat span {
+  color:var(--muted);
+  font-size:13px;
+}
+.analysis-card {
+  margin-top:0;
+}
+.random-complete-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#f0fdf4;
+  color:var(--ok);
+  font-weight:900;
+  font-size:13px;
+}
+@media(max-width:760px) {
+  .analysis-summary {
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* 테스트 결과분석 결과창 */
+.result-modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  padding:18px;
+  background:rgba(15,23,42,.42);
+  backdrop-filter:blur(8px);
+  align-items:center;
+  justify-content:center;
+}
+.result-modal.on {
+  display:flex;
+}
+.result-card {
+  width:min(760px, 100%);
+  max-height:88vh;
+  overflow:auto;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:30px;
+  box-shadow:0 24px 80px rgba(15,23,42,.25);
+  padding:24px;
+  position:relative;
+}
+.result-close {
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  padding:0;
+  font-size:24px;
+  line-height:1;
+}
+.result-kicker {
+  display:inline-flex;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#f1efff;
+  color:var(--p);
+  font-weight:900;
+  font-size:13px;
+  margin-bottom:10px;
+}
+.result-card h2 {
+  margin:0 0 14px;
+  font-size:32px;
+  letter-spacing:-.05em;
+}
+.result-summary {
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  margin-bottom:16px;
+}
+.result-stat {
+  background:#fbfdff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+}
+.result-stat b {
+  display:block;
+  font-size:28px;
+  letter-spacing:-.04em;
+}
+.result-stat span {
+  color:var(--muted);
+  font-size:13px;
+}
+.result-wrong-stats {
+  margin:0;
+}
+.result-wrong-stats h3 {
+  margin:0 0 6px;
+  font-size:22px;
+  letter-spacing:-.03em;
+}
+@media(max-width:720px) {
+  .result-summary {
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* 결과분석 버튼 영역 */
+.result-inline-panel {
+  margin-top:0;
+}
+.result-inline-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.result-inline-head p {
+  margin:4px 0 0;
+}
+.inline-result {
+  margin-top:12px;
+}
+.inline-result:empty {
+  display:none;
+}
+
+
+/* 긴 의학용어 카드 폭 유지 + 글자 자동 축소 */
+.question {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+.question.long-text {
+  font-size: clamp(32px, 5.5vw, 54px);
+  letter-spacing: -.04em;
+}
+.question.extra-long-text {
+  font-size: clamp(24px, 4.2vw, 40px);
+  letter-spacing: -.025em;
+  line-height: 1.12;
+}
+.answer .subanswer {
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+.answer .subanswer.long-text {
+  font-size: 16px !important;
+  line-height: 1.35;
+}
+.answer .subanswer.extra-long-text {
+  font-size: 14px !important;
+  line-height: 1.35;
+}
+
+
+/* 카드 글자 무조건 한 줄 맞춤 */
+.question {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  max-width: 100%;
+  line-height: 1.05;
+}
+.answer .subanswer {
+  display: block;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  max-width: 100%;
+}
+
+
+/* 한 줄 유지 보정: 짧은 단어는 원래 크기, 긴 단어만 축소 */
+.question {
+  font-size: clamp(42px, 8vw, 72px);
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  max-width: 100%;
+  line-height: 1.05;
+}
+.question.long-text {
+  font-size: clamp(32px, 5.5vw, 54px);
+}
+.question.extra-long-text {
+  font-size: clamp(24px, 4.2vw, 40px);
+}
+.answer .subanswer {
+  display:block;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  max-width:100%;
+}
+
+
+/* 카드 너비 고정 + 내부 글자만 축소 */
+.panel,
+.study-stack,
+.card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.card {
+  overflow: hidden;
+}
+.question {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  line-height: 1.05;
+}
+.answer {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.answer .subanswer {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>의학용어 공부하기</h1>
+    <div class="heroChips">
+      <span>카드공부</span>
+      <span>전체순서 랜덤카드</span>
+      <span>100문제 시험</span>
+      <span>오답노트</span>
+      <span>오답카드</span>
+    </div>
+    <div class="status">
+      <div class="stat"><b id="total">0</b><br><span>전체 단어</span></div>
+      <div class="stat"><b id="wrongN">0</b><br><span>오답</span></div>
+      <div class="stat"><b>100</b><br><span>시험 문항</span></div>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="primary active-tab" id="btnStudy">카드공부</button>
+    <button id="btnRandomAll">전체순서 랜덤카드</button>
+    <button id="btnQuiz">100문제 시험</button>
+    <button id="btnWrong">오답노트</button>
+    <button id="btnWrongStudy">오답카드</button>
+  </div>
+
+  <div class="tools">
+    <select id="cat"></select>
+    <input id="search" placeholder="검색: adm, 입원, Cancer">
+    <button id="reset">필터 초기화</button>
+  </div>
+
+  <main id="studyMode" class="mode on">
+    <div class="study-stack">
+      <section class="panel">
+        <div class="progress" id="prog">0 / 0</div>
+        <div class="card" id="card">
+          <span class="badge">문제</span>
+          <div class="question" id="qText">-</div>
+          <div class="meta" id="hint">한글 뜻을 떠올려보세요</div>
+          <div class="answer" id="aText">-</div>
+        </div>
+        <div class="actions">
+          <button id="prev">← 이전</button>
+          <button class="primary" id="showAnswer">정답 보기</button>
+          <button id="next">다음 →</button>
+          <button class="bad" id="addWrong">오답 저장</button>
+          <button class="ok" id="removeWrong">외웠음</button>
+        </div>
+      </section>
+      <aside class="panel">
+        <b>현재 목록</b>
+        <div id="mini" class="list" style="margin-top:10px"></div>
+      </aside>
+    </div>
+  </main>
+
+  <main id="randomAllMode" class="mode">
+    <section class="panel random-top-panel">
+      <div class="random-top-row">
+        <div>
+          <b>전체순서 랜덤카드</b>
+          <p class="meta">전체 236문제를 랜덤 순서로 한 장씩 봅니다.</p>
+        </div>
+        <button class="primary" id="shuffleAll">전체문제 다시 섞기</button>
+      </div>
+    </section>
+    <div class="study-stack">
+      <section class="panel">
+        <div class="progress" id="randomProg">0 / 0</div>
+        <div class="card" id="randomCard">
+          <span class="badge">문제</span>
+          <div class="question" id="randomQText">-</div>
+          <div class="meta" id="randomHint">한글 뜻을 떠올려보세요</div>
+          <div class="answer" id="randomAText">-</div>
+        </div>
+        <div class="actions">
+          <button id="randomPrev">← 이전</button>
+          <button class="primary" id="randomShowAnswer">정답 보기</button>
+          <button id="randomNext">다음 →</button>
+          <button class="bad" id="randomAddWrong">오답 저장</button>
+          <button class="ok" id="randomRemoveWrong">외웠음</button>
+        </div>
+      </section>
+
+      <section class="panel result-inline-panel">
+        <div class="result-inline-head">
+          <div>
+            <b>결과분석</b>
+            <p class="meta">100문제 시험과 동일하게 별도 결과창으로 확인합니다.</p>
+          </div>
+          <button id="randomShowResult" type="button">결과분석</button>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <b>사용법</b>
+        <p class="meta">카드를 누르면 정답이 펼쳐집니다.</p>
+        <p class="meta">단축키: Space 정답 보기 · ←/→ 이동 · W 오답 저장 · E 외웠음</p>
+      </aside>
+    </div>
+  </main>
+
+  <main id="quizMode" class="mode">
+    <section class="panel">
+      <div class="actions">
+        <button class="primary" id="newQuiz">새 100문제 만들기</button>
+        <button id="openAll">정답 전체 펼치기</button>
+        <button id="quizShowResult" type="button">결과분석</button>
+      </div>
+      <p class="meta">문제 줄에는 시험처럼 출제어만 보입니다. 약어 문제는 정답을 펼치면 한글 뜻, 영어용어, 파트가 함께 표시됩니다.</p>
+      <div id="quizList" class="quiz"></div>
+    </section>
+  </main>
+<main id="wrongMode" class="mode">
+    <section class="panel">
+      <div class="actions">
+        <button class="bad" id="clearWrong" type="button">오답노트 비우기</button>
+        <button id="allWrongAnalysis" type="button">전체오답노트 분석</button>
+      </div>
+
+      <div id="wrongList" class="quiz"></div>
+    </section>
+  </main>
+
+  <div id="resultModal" class="result-modal" aria-hidden="true">
+    <div class="result-card">
+      <button class="result-close" id="closeResult" type="button">×</button>
+      <div class="result-kicker" id="resultKicker">테스트 결과분석</div>
+      <h2 id="resultTitle">결과</h2>
+      <div id="resultSummary" class="result-summary"></div>
+      <div class="wrong-stats-box result-wrong-stats">
+        <h3>파트별 오답비율</h3>
+        <p class="meta">오답비율 = 이 테스트의 해당 파트 오답 수 / 해당 파트 전체 단어 수</p>
+        <div id="resultWrongStats" class="wrong-stats"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  const TERMS = [{"no": 1, "cat": "1. 공통의학용어", "abbr": "adm", "term": "admission", "mean": "입원", "q": "adm", "kind": "약어"}, {"no": 2, "cat": "1. 공통의학용어", "abbr": "AST", "term": "Antibiotics skintest", "mean": "항생제 피부 반응 검사", "q": "AST", "kind": "약어"}, {"no": 3, "cat": "1. 공통의학용어", "abbr": "Ca", "term": "Cancer", "mean": "암", "q": "Ca", "kind": "약어"}, {"no": 4, "cat": "1. 공통의학용어", "abbr": "CSF", "term": "Cerebrospinal fluid", "mean": "뇌척수액", "q": "CSF", "kind": "약어"}, {"no": 5, "cat": "1. 공통의학용어", "abbr": "D/C", "term": "discharge", "mean": "퇴원", "q": "D/C", "kind": "약어"}, {"no": 6, "cat": "1. 공통의학용어", "abbr": "D/C", "term": "discontinue", "mean": "중단", "q": "D/C", "kind": "약어"}, {"no": 7, "cat": "1. 공통의학용어", "abbr": "DNR", "term": "do not resuscitate", "mean": "소생술포기", "q": "DNR", "kind": "약어"}, {"no": 8, "cat": "1. 공통의학용어", "abbr": "Dx", "term": "Dressing", "mean": "소독, 드레싱", "q": "Dx", "kind": "약어"}, {"no": 9, "cat": "1. 공통의학용어", "abbr": "HIV", "term": "Human immunodeficiency virus", "mean": "인간면역결핍 바이러스", "q": "HIV", "kind": "약어"}, {"no": 10, "cat": "1. 공통의학용어", "abbr": "I/O", "term": "input & output, intake & output", "mean": "섭취&배설", "q": "I/O", "kind": "약어"}, {"no": 11, "cat": "1. 공통의학용어", "abbr": "N/V", "term": "nausea/vomiting", "mean": "오심/구토", "q": "N/V", "kind": "약어"}, {"no": 12, "cat": "1. 공통의학용어", "abbr": "Obs", "term": "observation", "mean": "관찰", "q": "Obs", "kind": "약어"}, {"no": 13, "cat": "1. 공통의학용어", "abbr": "OP", "term": "operation", "mean": "수술", "q": "OP", "kind": "약어"}, {"no": 14, "cat": "1. 공통의학용어", "abbr": "P-care", "term": "perineal care", "mean": "회음부간호", "q": "P-care", "kind": "약어"}, {"no": 15, "cat": "1. 공통의학용어", "abbr": "per", "term": "Permission", "mean": "동의서", "q": "per", "kind": "약어"}, {"no": 16, "cat": "1. 공통의학용어", "abbr": "PICC", "term": "Peripherally inserted central catheter", "mean": "말초 삽입형 중심 정맥 카테터", "q": "PICC", "kind": "약어"}, {"no": 17, "cat": "1. 공통의학용어", "abbr": "POD", "term": "post operative day", "mean": "수술후 날짜", "q": "POD", "kind": "약어"}, {"no": 18, "cat": "1. 공통의학용어", "abbr": "POI", "term": "Poor oral intake", "mean": "경구 섭취 불량", "q": "POI", "kind": "약어"}, {"no": 19, "cat": "1. 공통의학용어", "abbr": "PLT", "term": "Platelet", "mean": "혈소판", "q": "PLT", "kind": "약어"}, {"no": 20, "cat": "1. 공통의학용어", "abbr": "T/F", "term": "transfusion", "mean": "수혈", "q": "T/F", "kind": "약어"}, {"no": 21, "cat": "1. 공통의학용어", "abbr": "UTI", "term": "Urinary tract infection", "mean": "요로 감염", "q": "UTI", "kind": "약어"}, {"no": 22, "cat": "1. 공통의학용어", "abbr": "V/O", "term": "verbal order", "mean": "구두처방", "q": "V/O", "kind": "약어"}, {"no": 23, "cat": "1. 공통의학용어", "abbr": "", "term": "Anemia", "mean": "빈혈", "q": "Anemia", "kind": "영어용어"}, {"no": 24, "cat": "1. 공통의학용어", "abbr": "", "term": "Blood culture", "mean": "혈액 배양검사", "q": "Blood culture", "kind": "영어용어"}, {"no": 25, "cat": "1. 공통의학용어", "abbr": "", "term": "Chilling", "mean": "오한", "q": "Chilling", "kind": "영어용어"}, {"no": 26, "cat": "1. 공통의학용어", "abbr": "", "term": "Contamination", "mean": "오염", "q": "Contamination", "kind": "영어용어"}, {"no": 27, "cat": "1. 공통의학용어", "abbr": "", "term": "Fever", "mean": "발열", "q": "Fever", "kind": "영어용어"}, {"no": 28, "cat": "1. 공통의학용어", "abbr": "", "term": "Infection", "mean": "감염", "q": "Infection", "kind": "영어용어"}, {"no": 29, "cat": "1. 공통의학용어", "abbr": "", "term": "Itching", "mean": "가려움", "q": "Itching", "kind": "영어용어"}, {"no": 30, "cat": "1. 공통의학용어", "abbr": "", "term": "Myalgia", "mean": "근육통", "q": "Myalgia", "kind": "영어용어"}, {"no": 31, "cat": "1. 공통의학용어", "abbr": "", "term": "obesity", "mean": "비만", "q": "obesity", "kind": "영어용어"}, {"no": 32, "cat": "1. 공통의학용어", "abbr": "", "term": "Sepsis", "mean": "패혈증", "q": "Sepsis", "kind": "영어용어"}, {"no": 33, "cat": "1. 공통의학용어", "abbr": "", "term": "Side effect", "mean": "부작용", "q": "Side effect", "kind": "영어용어"}, {"no": 34, "cat": "1. 공통의학용어", "abbr": "", "term": "Skin rash", "mean": "피부 발진", "q": "Skin rash", "kind": "영어용어"}, {"no": 35, "cat": "1. 공통의학용어", "abbr": "", "term": "Sputum culture", "mean": "객담 배양검사", "q": "Sputum culture", "kind": "영어용어"}, {"no": 36, "cat": "1. 공통의학용어", "abbr": "", "term": "Stitch Out", "mean": "봉합 제거", "q": "Stitch Out", "kind": "영어용어"}, {"no": 37, "cat": "1. 공통의학용어", "abbr": "", "term": "Swelling", "mean": "종창", "q": "Swelling", "kind": "영어용어"}, {"no": 38, "cat": "1. 공통의학용어", "abbr": "", "term": "Tepid massage", "mean": "미온수 마사지", "q": "Tepid massage", "kind": "영어용어"}, {"no": 39, "cat": "1. 공통의학용어", "abbr": "", "term": "Urine culture", "mean": "소변 배양검사", "q": "Urine culture", "kind": "영어용어"}, {"no": 40, "cat": "1. 공통의학용어", "abbr": "", "term": "Urticaria", "mean": "두드러기", "q": "Urticaria", "kind": "영어용어"}, {"no": 41, "cat": "2. 소화기내과", "abbr": "AGC", "term": "Advanced gastric cancer", "mean": "진행성 위암", "q": "AGC", "kind": "약어"}, {"no": 42, "cat": "2. 소화기내과", "abbr": "CFS", "term": "Colonofiberscopy", "mean": "대장내시경", "q": "CFS", "kind": "약어"}, {"no": 43, "cat": "2. 소화기내과", "abbr": "EGC", "term": "Early gastric cancer", "mean": "조기위암", "q": "EGC", "kind": "약어"}, {"no": 44, "cat": "2. 소화기내과", "abbr": "EMR", "term": "Endoscopic mucosal resection", "mean": "내시경적 점막 절제술", "q": "EMR", "kind": "약어"}, {"no": 45, "cat": "2. 소화기내과", "abbr": "ERCP", "term": "Endoscopic Retrograde Cholangiopancreatography", "mean": "내시경적 역행 담췌관 조영술", "q": "ERCP", "kind": "약어"}, {"no": 46, "cat": "2. 소화기내과", "abbr": "ESD", "term": "Endoscopic submucosal dissection", "mean": "내시경적 점막하 박리술", "q": "ESD", "kind": "약어"}, {"no": 47, "cat": "2. 소화기내과", "abbr": "EVL", "term": "Endoscopic variceal ligation", "mean": "내시경 식도정맥류 결찰술", "q": "EVL", "kind": "약어"}, {"no": 48, "cat": "2. 소화기내과", "abbr": "E.Varix", "term": "Esophageal varix", "mean": "식도 정맥류", "q": "E.Varix", "kind": "약어"}, {"no": 49, "cat": "2. 소화기내과", "abbr": "EGD", "term": "Esophago-gastro-duodenoscopy", "mean": "식도-위-십이지장 내시경", "q": "EGD", "kind": "약어"}, {"no": 50, "cat": "2. 소화기내과", "abbr": "GERD", "term": "Gastroesophageal reflux disease", "mean": "위·식도 역류", "q": "GERD", "kind": "약어"}, {"no": 51, "cat": "2. 소화기내과", "abbr": "HBV", "term": "Hepatitis B virus", "mean": "B형 간염", "q": "HBV", "kind": "약어"}, {"no": 52, "cat": "2. 소화기내과", "abbr": "HCC", "term": "Hepato cellular cancer", "mean": "간세포암", "q": "HCC", "kind": "약어"}, {"no": 53, "cat": "2. 소화기내과", "abbr": "LC", "term": "Liver cirrhosis", "mean": "간 경변", "q": "LC", "kind": "약어"}, {"no": 54, "cat": "2. 소화기내과", "abbr": "LFT", "term": "Liver function test", "mean": "간 기능 검사", "q": "LFT", "kind": "약어"}, {"no": 55, "cat": "2. 소화기내과", "abbr": "PTBD", "term": "Percutaneous Transhepatic Biliary Drainage", "mean": "경피 경간 담관 배액술", "q": "PTBD", "kind": "약어"}, {"no": 56, "cat": "2. 소화기내과", "abbr": "PTGBD", "term": "Percutaneous Transhepatic Gallbladder Drainage", "mean": "경피 경간 담낭 배액술", "q": "PTGBD", "kind": "약어"}, {"no": 57, "cat": "2. 소화기내과", "abbr": "", "term": "Abdominal paracentesis", "mean": "복수천자", "q": "Abdominal paracentesis", "kind": "영어용어"}, {"no": 58, "cat": "2. 소화기내과", "abbr": "", "term": "Anorexia", "mean": "식욕부진", "q": "Anorexia", "kind": "영어용어"}, {"no": 59, "cat": "2. 소화기내과", "abbr": "", "term": "Aphagia", "mean": "연하불능", "q": "Aphagia", "kind": "영어용어"}, {"no": 60, "cat": "2. 소화기내과", "abbr": "", "term": "Ascites", "mean": "복수", "q": "Ascites", "kind": "영어용어"}, {"no": 61, "cat": "2. 소화기내과", "abbr": "", "term": "Colon", "mean": "결장", "q": "Colon", "kind": "영어용어"}, {"no": 62, "cat": "2. 소화기내과", "abbr": "", "term": "colonoscopy", "mean": "결장내시경", "q": "colonoscopy", "kind": "영어용어"}, {"no": 63, "cat": "2. 소화기내과", "abbr": "", "term": "constipation", "mean": "변비", "q": "constipation", "kind": "영어용어"}, {"no": 64, "cat": "2. 소화기내과", "abbr": "", "term": "Diarrhea", "mean": "설사", "q": "Diarrhea", "kind": "영어용어"}, {"no": 65, "cat": "2. 소화기내과", "abbr": "", "term": "Diverticulitis", "mean": "게실염", "q": "Diverticulitis", "kind": "영어용어"}, {"no": 66, "cat": "2. 소화기내과", "abbr": "", "term": "Dyspepsia", "mean": "소화불량", "q": "Dyspepsia", "kind": "영어용어"}, {"no": 67, "cat": "2. 소화기내과", "abbr": "", "term": "Dysphagia", "mean": "연하곤란", "q": "Dysphagia", "kind": "영어용어"}, {"no": 68, "cat": "2. 소화기내과", "abbr": "", "term": "Enteritis", "mean": "장염", "q": "Enteritis", "kind": "영어용어"}, {"no": 69, "cat": "2. 소화기내과", "abbr": "", "term": "Epigastric pain", "mean": "상복부(명치) 통증", "q": "Epigastric pain", "kind": "영어용어"}, {"no": 70, "cat": "2. 소화기내과", "abbr": "", "term": "Hematemesis", "mean": "토혈", "q": "Hematemesis", "kind": "영어용어"}, {"no": 71, "cat": "2. 소화기내과", "abbr": "", "term": "Hematochezia", "mean": "혈변", "q": "Hematochezia", "kind": "영어용어"}, {"no": 72, "cat": "2. 소화기내과", "abbr": "", "term": "Hepatic encephalopathy", "mean": "간성뇌증", "q": "Hepatic encephalopathy", "kind": "영어용어"}, {"no": 73, "cat": "2. 소화기내과", "abbr": "", "term": "Hernia", "mean": "탈장", "q": "Hernia", "kind": "영어용어"}, {"no": 74, "cat": "2. 소화기내과", "abbr": "", "term": "Jaundice", "mean": "황달", "q": "Jaundice", "kind": "영어용어"}, {"no": 75, "cat": "2. 소화기내과", "abbr": "", "term": "Melena", "mean": "흑변", "q": "Melena", "kind": "영어용어"}, {"no": 76, "cat": "2. 소화기내과", "abbr": "", "term": "peritoneal", "mean": "복막의", "q": "peritoneal", "kind": "영어용어"}, {"no": 77, "cat": "2. 소화기내과", "abbr": "", "term": "Sigmoidoscopy", "mean": "S자 결장 내시경", "q": "Sigmoidoscopy", "kind": "영어용어"}, {"no": 78, "cat": "3. 심장내과", "abbr": "AMI", "term": "Acute myocardial infarction", "mean": "급성 심근경색", "q": "AMI", "kind": "약어"}, {"no": 79, "cat": "3. 심장내과", "abbr": "AF, A-fib", "term": "Atrial fibrillation", "mean": "심방세동", "q": "AF, A-fib", "kind": "약어"}, {"no": 80, "cat": "3. 심장내과", "abbr": "CHF", "term": "Congestive heart failure", "mean": "울혈성 심부전", "q": "CHF", "kind": "약어"}, {"no": 81, "cat": "3. 심장내과", "abbr": "CAG", "term": "Coronary angiography", "mean": "관상동맥 혈관 조영술", "q": "CAG", "kind": "약어"}, {"no": 82, "cat": "3. 심장내과", "abbr": "CABG", "term": "Coronary artery bypass graft", "mean": "관상동맥 우회로 이식술", "q": "CABG", "kind": "약어"}, {"no": 83, "cat": "3. 심장내과", "abbr": "CAD", "term": "Coronary artery disease", "mean": "관상동맥 질환", "q": "CAD", "kind": "약어"}, {"no": 84, "cat": "3. 심장내과", "abbr": "EF", "term": "Ejection fraction", "mean": "분출률", "q": "EF", "kind": "약어"}, {"no": 85, "cat": "3. 심장내과", "abbr": "ECG, EKG", "term": "Electrocardiogram", "mean": "심전도", "q": "ECG, EKG", "kind": "약어"}, {"no": 86, "cat": "3. 심장내과", "abbr": "ICD", "term": "Implantable cardioverter defibrillator", "mean": "삽입형 제세동기", "q": "ICD", "kind": "약어"}, {"no": 87, "cat": "3. 심장내과", "abbr": "IHD", "term": "Ischemic heart disease", "mean": "허혈성 심장 질환", "q": "IHD", "kind": "약어"}, {"no": 88, "cat": "3. 심장내과", "abbr": "MI", "term": "Myocardial Infarction", "mean": "심근경색", "q": "MI", "kind": "약어"}, {"no": 89, "cat": "3. 심장내과", "abbr": "NSTEMI", "term": "Non-ST segment elevation myocardial infarction", "mean": "ST 분절 비상승 심근경색", "q": "NSTEMI", "kind": "약어"}, {"no": 90, "cat": "3. 심장내과", "abbr": "PCI", "term": "Percutaneous coronary intervention", "mean": "경피적 관상동맥 중재술", "q": "PCI", "kind": "약어"}, {"no": 91, "cat": "3. 심장내과", "abbr": "PTCA", "term": "Percutaneous transluminal coronary angioplasty", "mean": "경피적 경혈관 관상동맥 확장술", "q": "PTCA", "kind": "약어"}, {"no": 92, "cat": "3. 심장내과", "abbr": "STEMI", "term": "ST segment elevation myocardial infarction", "mean": "ST 분절 상승 심근경색", "q": "STEMI", "kind": "약어"}, {"no": 93, "cat": "3. 심장내과", "abbr": "TEE", "term": "Transesophageal echocardiogram", "mean": "경식도 심장 초음파", "q": "TEE", "kind": "약어"}, {"no": 94, "cat": "3. 심장내과", "abbr": "TTE", "term": "Transthoracic echocardiogram", "mean": "경흉부 심장 초음파", "q": "TTE", "kind": "약어"}, {"no": 95, "cat": "3. 심장내과", "abbr": "UA", "term": "Unstable angina", "mean": "불안정 협심증", "q": "UA", "kind": "약어"}, {"no": 96, "cat": "3. 심장내과", "abbr": "VF", "term": "Ventricular fibrillation", "mean": "심실세동", "q": "VF", "kind": "약어"}, {"no": 97, "cat": "3. 심장내과", "abbr": "VT", "term": "Ventricular tachycardia", "mean": "심실빈맥", "q": "VT", "kind": "약어"}, {"no": 98, "cat": "3. 심장내과", "abbr": "", "term": "Angina pectoris", "mean": "협심증", "q": "Angina pectoris", "kind": "영어용어"}, {"no": 99, "cat": "3. 심장내과", "abbr": "", "term": "Arrhythmia", "mean": "부정맥", "q": "Arrhythmia", "kind": "영어용어"}, {"no": 100, "cat": "3. 심장내과", "abbr": "", "term": "Bradycardia", "mean": "서맥", "q": "Bradycardia", "kind": "영어용어"}, {"no": 101, "cat": "3. 심장내과", "abbr": "", "term": "Cardiomegaly", "mean": "심장비대", "q": "Cardiomegaly", "kind": "영어용어"}, {"no": 102, "cat": "3. 심장내과", "abbr": "", "term": "chest discomfort", "mean": "흉부불편감", "q": "chest discomfort", "kind": "영어용어"}, {"no": 103, "cat": "3. 심장내과", "abbr": "", "term": "chest pain", "mean": "흉통", "q": "chest pain", "kind": "영어용어"}, {"no": 104, "cat": "3. 심장내과", "abbr": "", "term": "Defibrillator", "mean": "제세동기", "q": "Defibrillator", "kind": "영어용어"}, {"no": 105, "cat": "3. 심장내과", "abbr": "", "term": "Palpitation", "mean": "심계항진", "q": "Palpitation", "kind": "영어용어"}, {"no": 106, "cat": "3. 심장내과", "abbr": "", "term": "tachycardia", "mean": "빈맥", "q": "tachycardia", "kind": "영어용어"}, {"no": 107, "cat": "4. 신장내과", "abbr": "AKI", "term": "Acute Kidney injury", "mean": "급성 신장 손상", "q": "AKI", "kind": "약어"}, {"no": 108, "cat": "4. 신장내과", "abbr": "APN", "term": "Acute pyelonephritis", "mean": "급성 신우신염", "q": "APN", "kind": "약어"}, {"no": 109, "cat": "4. 신장내과", "abbr": "AVF", "term": "Arterio-venous fistula", "mean": "동정맥루", "q": "AVF", "kind": "약어"}, {"no": 110, "cat": "4. 신장내과", "abbr": "AVG", "term": "Arterio-venous graft", "mean": "인조혈관 동정맥루", "q": "AVG", "kind": "약어"}, {"no": 111, "cat": "4. 신장내과", "abbr": "BUN", "term": "Blood urea nitrogen", "mean": "혈중 요소 질소", "q": "BUN", "kind": "약어"}, {"no": 112, "cat": "4. 신장내과", "abbr": "CKD", "term": "Chronic Kidney disease", "mean": "만성 신장 질환", "q": "CKD", "kind": "약어"}, {"no": 113, "cat": "4. 신장내과", "abbr": "CRF", "term": "Chronic renal failure", "mean": "만성 신부전", "q": "CRF", "kind": "약어"}, {"no": 114, "cat": "4. 신장내과", "abbr": "ECUM", "term": "Extracorporeal ultrafiltration method", "mean": "초미세 여과", "q": "ECUM", "kind": "약어"}, {"no": 115, "cat": "4. 신장내과", "abbr": "HD", "term": "Hemodialysis", "mean": "혈액투석", "q": "HD", "kind": "약어"}, {"no": 116, "cat": "4. 신장내과", "abbr": "PD", "term": "Peritoneal dialysis", "mean": "복막투석", "q": "PD", "kind": "약어"}, {"no": 117, "cat": "4. 신장내과", "abbr": "", "term": "Dialysis", "mean": "투석", "q": "Dialysis", "kind": "영어용어"}, {"no": 118, "cat": "4. 신장내과", "abbr": "", "term": "Nephritis", "mean": "신장염", "q": "Nephritis", "kind": "영어용어"}, {"no": 119, "cat": "4. 신장내과", "abbr": "", "term": "Flank pain", "mean": "옆구리 통증", "q": "Flank pain", "kind": "영어용어"}, {"no": 120, "cat": "4. 신장내과", "abbr": "", "term": "Hydronephrosis", "mean": "수신증", "q": "Hydronephrosis", "kind": "영어용어"}, {"no": 121, "cat": "4. 신장내과", "abbr": "", "term": "Renal failure", "mean": "신부전", "q": "Renal failure", "kind": "영어용어"}, {"no": 122, "cat": "4. 신장내과", "abbr": "", "term": "Hyperkalemia", "mean": "고칼륨혈증", "q": "Hyperkalemia", "kind": "영어용어"}, {"no": 123, "cat": "5. 호흡기내과", "abbr": "COPD", "term": "Chronic obstructive pulmonary disease", "mean": "만성 폐쇄성 폐 질환", "q": "COPD", "kind": "약어"}, {"no": 124, "cat": "5. 호흡기내과", "abbr": "PFT", "term": "Pulmonary function test", "mean": "폐 기능 검사", "q": "PFT", "kind": "약어"}, {"no": 125, "cat": "5. 호흡기내과", "abbr": "Tb", "term": "Tuberculosis", "mean": "결핵", "q": "Tb", "kind": "약어"}, {"no": 126, "cat": "5. 호흡기내과", "abbr": "", "term": "Asthma", "mean": "천식", "q": "Asthma", "kind": "영어용어"}, {"no": 127, "cat": "5. 호흡기내과", "abbr": "", "term": "Atelectasis", "mean": "무기폐", "q": "Atelectasis", "kind": "영어용어"}, {"no": 128, "cat": "5. 호흡기내과", "abbr": "", "term": "Bronchitis", "mean": "만성기관지염", "q": "Bronchitis", "kind": "영어용어"}, {"no": 129, "cat": "5. 호흡기내과", "abbr": "", "term": "Bronchoscopy", "mean": "기관지내시경", "q": "Bronchoscopy", "kind": "영어용어"}, {"no": 130, "cat": "5. 호흡기내과", "abbr": "", "term": "Dyspnea", "mean": "호흡곤란", "q": "Dyspnea", "kind": "영어용어"}, {"no": 131, "cat": "5. 호흡기내과", "abbr": "", "term": "Hemoptysis", "mean": "객혈", "q": "Hemoptysis", "kind": "영어용어"}, {"no": 132, "cat": "5. 호흡기내과", "abbr": "", "term": "Hemothorax", "mean": "혈흉", "q": "Hemothorax", "kind": "영어용어"}, {"no": 133, "cat": "5. 호흡기내과", "abbr": "", "term": "Hypoxia", "mean": "저산소증", "q": "Hypoxia", "kind": "영어용어"}, {"no": 134, "cat": "5. 호흡기내과", "abbr": "", "term": "Inhalation", "mean": "흡입", "q": "Inhalation", "kind": "영어용어"}, {"no": 135, "cat": "5. 호흡기내과", "abbr": "", "term": "Intubation", "mean": "기관삽관", "q": "Intubation", "kind": "영어용어"}, {"no": 136, "cat": "5. 호흡기내과", "abbr": "", "term": "Nebulizer", "mean": "분무 요법", "q": "Nebulizer", "kind": "영어용어"}, {"no": 137, "cat": "5. 호흡기내과", "abbr": "", "term": "Pleural effusion", "mean": "흉막 삼출액", "q": "Pleural effusion", "kind": "영어용어"}, {"no": 138, "cat": "5. 호흡기내과", "abbr": "", "term": "Pneumonia", "mean": "폐렴", "q": "Pneumonia", "kind": "영어용어"}, {"no": 139, "cat": "5. 호흡기내과", "abbr": "", "term": "Sore throat", "mean": "인후통", "q": "Sore throat", "kind": "영어용어"}, {"no": 140, "cat": "5. 호흡기내과", "abbr": "", "term": "Sputum", "mean": "가래(객담)", "q": "Sputum", "kind": "영어용어"}, {"no": 141, "cat": "5. 호흡기내과", "abbr": "", "term": "Thoracentesis", "mean": "흉곽 천자", "q": "Thoracentesis", "kind": "영어용어"}, {"no": 142, "cat": "5. 호흡기내과", "abbr": "", "term": "Ventilator", "mean": "인공호흡기", "q": "Ventilator", "kind": "영어용어"}, {"no": 143, "cat": "5. 호흡기내과", "abbr": "", "term": "Wheezing", "mean": "천명음", "q": "Wheezing", "kind": "영어용어"}, {"no": 144, "cat": "6. 내분비내과", "abbr": "DM", "term": "Diabetes mellitus", "mean": "당뇨", "q": "DM", "kind": "약어"}, {"no": 145, "cat": "6. 내분비내과", "abbr": "DKA", "term": "Diabetic ketoacidosis", "mean": "당뇨병성 케톤산증", "q": "DKA", "kind": "약어"}, {"no": 146, "cat": "6. 내분비내과", "abbr": "DM foot", "term": "Diabetes mellitus foot", "mean": "당뇨 발", "q": "DM foot", "kind": "약어"}, {"no": 147, "cat": "6. 내분비내과", "abbr": "GTT", "term": "Glucose tolerance test", "mean": "당 부하 내성 검사", "q": "GTT", "kind": "약어"}, {"no": 148, "cat": "6. 내분비내과", "abbr": "HbA1C", "term": "Glycosylated Hemoglobin", "mean": "당화혈색소", "q": "HbA1C", "kind": "약어"}, {"no": 149, "cat": "6. 내분비내과", "abbr": "", "term": "Dehydration", "mean": "탈수", "q": "Dehydration", "kind": "영어용어"}, {"no": 150, "cat": "6. 내분비내과", "abbr": "", "term": "Diabetic nephropathy", "mean": "당뇨병성 신증", "q": "Diabetic nephropathy", "kind": "영어용어"}, {"no": 151, "cat": "6. 내분비내과", "abbr": "", "term": "Diabetic neuropathy", "mean": "당뇨병성 신경병증", "q": "Diabetic neuropathy", "kind": "영어용어"}, {"no": 152, "cat": "6. 내분비내과", "abbr": "", "term": "Diabetic retinopathy", "mean": "당뇨병성 망막병증", "q": "Diabetic retinopathy", "kind": "영어용어"}, {"no": 153, "cat": "6. 내분비내과", "abbr": "", "term": "Hyperglycemia", "mean": "고혈당", "q": "Hyperglycemia", "kind": "영어용어"}, {"no": 154, "cat": "6. 내분비내과", "abbr": "", "term": "Hyperthyroidism", "mean": "갑상선기능항진증", "q": "Hyperthyroidism", "kind": "영어용어"}, {"no": 155, "cat": "6. 내분비내과", "abbr": "", "term": "Hypoglycemia", "mean": "저혈당", "q": "Hypoglycemia", "kind": "영어용어"}, {"no": 156, "cat": "6. 내분비내과", "abbr": "", "term": "Hypothyroidism", "mean": "갑상선기능저하증", "q": "Hypothyroidism", "kind": "영어용어"}, {"no": 157, "cat": "6. 내분비내과", "abbr": "", "term": "Insulin", "mean": "인슐린", "q": "Insulin", "kind": "영어용어"}, {"no": 158, "cat": "7. 혈액종양내과", "abbr": "CTx", "term": "Chemotherapy", "mean": "항암 화학요법", "q": "CTx", "kind": "약어"}, {"no": 159, "cat": "7. 혈액종양내과", "abbr": "DIC", "term": "Disseminated intravascular coagulation", "mean": "파종성 혈관 내 응고", "q": "DIC", "kind": "약어"}, {"no": 160, "cat": "7. 혈액종양내과", "abbr": "IDA", "term": "Iron deficiency anemia", "mean": "철결핍성 빈혈", "q": "IDA", "kind": "약어"}, {"no": 161, "cat": "7. 혈액종양내과", "abbr": "", "term": "Cancer", "mean": "암", "q": "Cancer", "kind": "영어용어"}, {"no": 162, "cat": "7. 혈액종양내과", "abbr": "", "term": "Chemoport", "mean": "케모포트", "q": "Chemoport", "kind": "영어용어"}, {"no": 163, "cat": "7. 혈액종양내과", "abbr": "", "term": "Hickman catheter", "mean": "히크만 카테터", "q": "Hickman catheter", "kind": "영어용어"}, {"no": 164, "cat": "7. 혈액종양내과", "abbr": "", "term": "Leukopenia", "mean": "백혈구감소증", "q": "Leukopenia", "kind": "영어용어"}, {"no": 165, "cat": "7. 혈액종양내과", "abbr": "", "term": "Lymphoma", "mean": "림프종", "q": "Lymphoma", "kind": "영어용어"}, {"no": 166, "cat": "7. 혈액종양내과", "abbr": "", "term": "Malignant neoplasm", "mean": "악성 신생물", "q": "Malignant neoplasm", "kind": "영어용어"}, {"no": 167, "cat": "7. 혈액종양내과", "abbr": "", "term": "Malignant tumor", "mean": "악성 종양", "q": "Malignant tumor", "kind": "영어용어"}, {"no": 168, "cat": "7. 혈액종양내과", "abbr": "", "term": "Petechia", "mean": "점상 출혈", "q": "Petechia", "kind": "영어용어"}, {"no": 169, "cat": "7. 혈액종양내과", "abbr": "", "term": "Thrombocytopenia", "mean": "혈소판 감소증", "q": "Thrombocytopenia", "kind": "영어용어"}, {"no": 170, "cat": "7. 혈액종양내과", "abbr": "", "term": "Thrombocytosis", "mean": "혈소판 증가증", "q": "Thrombocytosis", "kind": "영어용어"}, {"no": 171, "cat": "7. 혈액종양내과", "abbr": "", "term": "Tumor", "mean": "종양", "q": "Tumor", "kind": "영어용어"}, {"no": 172, "cat": "8. 산부인과", "abbr": "CIS", "term": "Carcinoma In Situ", "mean": "자궁경부상피내종양", "q": "CIS", "kind": "약어"}, {"no": 173, "cat": "8. 산부인과", "abbr": "Cx", "term": "Cervix", "mean": "자궁경부(자궁목)", "q": "Cx", "kind": "약어"}, {"no": 174, "cat": "8. 산부인과", "abbr": "D&C", "term": "Dilatation And Curettage", "mean": "소파술", "q": "D&C", "kind": "약어"}, {"no": 175, "cat": "8. 산부인과", "abbr": "LAVH", "term": "Laparoscopic-Assisted Vaginal Hysterectomy", "mean": "복강경하 질식자궁절제술", "q": "LAVH", "kind": "약어"}, {"no": 176, "cat": "8. 산부인과", "abbr": "LMP", "term": "Last Menstrual Period", "mean": "최종월경일", "q": "LMP", "kind": "약어"}, {"no": 177, "cat": "8. 산부인과", "abbr": "LEEP", "term": "Loop Electrosurgical Excision Procedure", "mean": "루프 전기소작 절제술", "q": "LEEP", "kind": "약어"}, {"no": 178, "cat": "8. 산부인과", "abbr": "TAH", "term": "Total Abdominal Hysterectomy", "mean": "복부절개하 자궁적출수술", "q": "TAH", "kind": "약어"}, {"no": 179, "cat": "8. 산부인과", "abbr": "TLH", "term": "Total Laparoscopic Hysterectomy", "mean": "복강경하 전자궁적출수술", "q": "TLH", "kind": "약어"}, {"no": 180, "cat": "8. 산부인과", "abbr": "", "term": "Abortion", "mean": "유산", "q": "Abortion", "kind": "영어용어"}, {"no": 181, "cat": "8. 산부인과", "abbr": "", "term": "Adenomyosis", "mean": "자궁선근증", "q": "Adenomyosis", "kind": "영어용어"}, {"no": 182, "cat": "8. 산부인과", "abbr": "", "term": "Adhesion", "mean": "유착", "q": "Adhesion", "kind": "영어용어"}, {"no": 183, "cat": "8. 산부인과", "abbr": "", "term": "Endometriosis", "mean": "자궁내막증", "q": "Endometriosis", "kind": "영어용어"}, {"no": 184, "cat": "8. 산부인과", "abbr": "", "term": "Hysterectomy", "mean": "자궁적출술", "q": "Hysterectomy", "kind": "영어용어"}, {"no": 185, "cat": "8. 산부인과", "abbr": "", "term": "Myoma", "mean": "근종", "q": "Myoma", "kind": "영어용어"}, {"no": 186, "cat": "8. 산부인과", "abbr": "", "term": "Ovary Cyst", "mean": "난소낭종", "q": "Ovary Cyst", "kind": "영어용어"}, {"no": 187, "cat": "8. 산부인과", "abbr": "", "term": "Pap Smear", "mean": "질세포진검사", "q": "Pap Smear", "kind": "영어용어"}, {"no": 188, "cat": "8. 산부인과", "abbr": "", "term": "Perineum", "mean": "회음", "q": "Perineum", "kind": "영어용어"}, {"no": 189, "cat": "8. 산부인과", "abbr": "", "term": "Uterus Prolapse", "mean": "자궁탈출증", "q": "Uterus Prolapse", "kind": "영어용어"}, {"no": 190, "cat": "9. 외과", "abbr": "appe", "term": "Appendectomy", "mean": "충수돌기절제술", "q": "appe", "kind": "약어"}, {"no": 191, "cat": "9. 외과", "abbr": "GB stone", "term": "Gallbladder Stone", "mean": "담석", "q": "GB stone", "kind": "약어"}, {"no": 192, "cat": "9. 외과", "abbr": "PCD", "term": "Percutaneous Catheter Drainage", "mean": "경피적 카테터 배액술", "q": "PCD", "kind": "약어"}, {"no": 193, "cat": "9. 외과", "abbr": "", "term": "Appendicitis", "mean": "충수돌기염", "q": "Appendicitis", "kind": "영어용어"}, {"no": 194, "cat": "9. 외과", "abbr": "", "term": "Ascites", "mean": "복수", "q": "Ascites", "kind": "영어용어"}, {"no": 195, "cat": "9. 외과", "abbr": "", "term": "Cholangitis", "mean": "담관염", "q": "Cholangitis", "kind": "영어용어"}, {"no": 196, "cat": "9. 외과", "abbr": "", "term": "cholecystectomy", "mean": "담낭절제술", "q": "cholecystectomy", "kind": "영어용어"}, {"no": 197, "cat": "9. 외과", "abbr": "", "term": "Cholecystitis", "mean": "담낭염", "q": "Cholecystitis", "kind": "영어용어"}, {"no": 198, "cat": "10. 정형외과", "abbr": "CRIF", "term": "Closed Reduction And Internal Fixation", "mean": "폐쇄정복고정술", "q": "CRIF", "kind": "약어"}, {"no": 199, "cat": "10. 정형외과", "abbr": "Fx.", "term": "Fracture", "mean": "골절", "q": "Fx.", "kind": "약어"}, {"no": 200, "cat": "10. 정형외과", "abbr": "ORIF", "term": "Open Reduction And Internal Fixation", "mean": "개방정복고정술", "q": "ORIF", "kind": "약어"}, {"no": 201, "cat": "10. 정형외과", "abbr": "OA", "term": "Osteoarthritis", "mean": "골관절염", "q": "OA", "kind": "약어"}, {"no": 202, "cat": "10. 정형외과", "abbr": "THR", "term": "Total Hip Replacement", "mean": "인공고관절전치환술", "q": "THR", "kind": "약어"}, {"no": 203, "cat": "10. 정형외과", "abbr": "TKR", "term": "Total Knee Replacement", "mean": "인공슬관절전치환술", "q": "TKR", "kind": "약어"}, {"no": 204, "cat": "10. 정형외과", "abbr": "TSA", "term": "Total Shoulder Arthroplasty", "mean": "견관절 전치환술", "q": "TSA", "kind": "약어"}, {"no": 205, "cat": "10. 정형외과", "abbr": "", "term": "Dislocation", "mean": "탈구", "q": "Dislocation", "kind": "영어용어"}, {"no": 206, "cat": "10. 정형외과", "abbr": "", "term": "Gout", "mean": "통풍", "q": "Gout", "kind": "영어용어"}, {"no": 207, "cat": "10. 정형외과", "abbr": "", "term": "Osteoporosis", "mean": "골다공증", "q": "Osteoporosis", "kind": "영어용어"}, {"no": 208, "cat": "10. 정형외과", "abbr": "", "term": "Repair", "mean": "봉합", "q": "Repair", "kind": "영어용어"}, {"no": 209, "cat": "10. 정형외과", "abbr": "", "term": "Revision", "mean": "교정", "q": "Revision", "kind": "영어용어"}, {"no": 210, "cat": "10. 정형외과", "abbr": "", "term": "Rupture", "mean": "파열", "q": "Rupture", "kind": "영어용어"}, {"no": 211, "cat": "10. 정형외과", "abbr": "", "term": "Splint", "mean": "부목", "q": "Splint", "kind": "영어용어"}, {"no": 212, "cat": "10. 정형외과", "abbr": "", "term": "Sprain", "mean": "염좌", "q": "Sprain", "kind": "영어용어"}, {"no": 213, "cat": "10. 정형외과", "abbr": "", "term": "Tear", "mean": "찢김", "q": "Tear", "kind": "영어용어"}, {"no": 214, "cat": "11. 비뇨의학과", "abbr": "RU", "term": "Residual Urine", "mean": "잔뇨", "q": "RU", "kind": "약어"}, {"no": 215, "cat": "11. 비뇨의학과", "abbr": "BPH", "term": "Benign Prostatic Hyperplasia", "mean": "양성 전립선 비대", "q": "BPH", "kind": "약어"}, {"no": 216, "cat": "11. 비뇨의학과", "abbr": "ESWL", "term": "Extracorporeal Shock Wave Lithotripsy", "mean": "체외충격파 쇄석술", "q": "ESWL", "kind": "약어"}, {"no": 217, "cat": "11. 비뇨의학과", "abbr": "", "term": "Prostate gland", "mean": "전립선", "q": "Prostate gland", "kind": "영어용어"}, {"no": 218, "cat": "11. 비뇨의학과", "abbr": "", "term": "Testis", "mean": "고환", "q": "Testis", "kind": "영어용어"}, {"no": 219, "cat": "11. 비뇨의학과", "abbr": "", "term": "Distension", "mean": "팽만감", "q": "Distension", "kind": "영어용어"}, {"no": 220, "cat": "11. 비뇨의학과", "abbr": "", "term": "Dysuria", "mean": "배뇨곤란", "q": "Dysuria", "kind": "영어용어"}, {"no": 221, "cat": "11. 비뇨의학과", "abbr": "", "term": "Incontinence", "mean": "실금", "q": "Incontinence", "kind": "영어용어"}, {"no": 222, "cat": "11. 비뇨의학과", "abbr": "", "term": "Hematuria", "mean": "혈뇨", "q": "Hematuria", "kind": "영어용어"}, {"no": 223, "cat": "11. 비뇨의학과", "abbr": "", "term": "Ureteral Stone", "mean": "요관 결석", "q": "Ureteral Stone", "kind": "영어용어"}, {"no": 224, "cat": "12. 안과", "abbr": "OD", "term": "Oculus dexter", "mean": "우안", "q": "OD", "kind": "약어"}, {"no": 225, "cat": "12. 안과", "abbr": "OS", "term": "Oculus sinister", "mean": "좌안", "q": "OS", "kind": "약어"}, {"no": 226, "cat": "12. 안과", "abbr": "OU", "term": "Oculus uterque", "mean": "양안", "q": "OU", "kind": "약어"}, {"no": 227, "cat": "12. 안과", "abbr": "PPL", "term": "Pars Plana lensectomy", "mean": "평면부 수정체절제(술)", "q": "PPL", "kind": "약어"}, {"no": 228, "cat": "12. 안과", "abbr": "PPV", "term": "Pars Plana Vitrectomy", "mean": "평면부 유리체 절제(술)", "q": "PPV", "kind": "약어"}, {"no": 229, "cat": "12. 안과", "abbr": "VA", "term": "Visual acuity", "mean": "시력", "q": "VA", "kind": "약어"}, {"no": 230, "cat": "12. 안과", "abbr": "VF", "term": "visual field", "mean": "시야", "q": "VF", "kind": "약어"}, {"no": 231, "cat": "12. 안과", "abbr": "", "term": "Cataract", "mean": "백내장", "q": "Cataract", "kind": "영어용어"}, {"no": 232, "cat": "12. 안과", "abbr": "", "term": "Detachment", "mean": "박리", "q": "Detachment", "kind": "영어용어"}, {"no": 233, "cat": "12. 안과", "abbr": "", "term": "Glaucoma", "mean": "녹내장", "q": "Glaucoma", "kind": "영어용어"}, {"no": 234, "cat": "12. 안과", "abbr": "", "term": "Macular", "mean": "황반", "q": "Macular", "kind": "영어용어"}, {"no": 235, "cat": "12. 안과", "abbr": "", "term": "Pupil", "mean": "동공", "q": "Pupil", "kind": "영어용어"}, {"no": 236, "cat": "12. 안과", "abbr": "", "term": "Retinal detachment", "mean": "망막박리", "q": "Retinal detachment", "kind": "영어용어"}];
+  const CATS = ["1. 공통의학용어", "2. 소화기내과", "3. 심장내과", "4. 신장내과", "5. 호흡기내과", "6. 내분비내과", "7. 혈액종양내과", "8. 산부인과", "9. 외과", "10. 정형외과", "11. 비뇨의학과", "12. 안과"];
+  const WRONG_KEY = "med_word_wrong_v2";
+  const RANDOM_WRONG_KEY = "med_word_random_wrong_v1";
+  const QUIZ_WRONG_KEY = "med_word_quiz_wrong_v1";
+
+  let deck = TERMS.slice();
+  let idx = 0;
+  let answerOpen = false;
+  let quiz = [];
+  let randomDeck = [];
+  let randomIdx = 0;
+  let randomAnswerOpen = false;
+  let randomSeen = new Set();
+  let lastRandomCompletedAt = localStorage.getItem("med_word_last_random_completed_at") || "";
+  let quizOpened = new Set();
+  let quizCompletedShown = false;
+
+  function el(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+  }
+  function wrongs() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(WRONG_KEY) || "[]");
+      return Array.isArray(parsed) ? parsed.map(Number).filter(Boolean) : [];
+    } catch(e) {
+      return [];
+    }
+  }
+
+  function getStoredList(key) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(parsed) ? parsed.map(Number).filter(Boolean) : [];
+    } catch(e) {
+      return [];
+    }
+  }
+  function saveStoredList(key, arr) {
+    const unique = Array.from(new Set(arr.map(Number).filter(Boolean)));
+    localStorage.setItem(key, JSON.stringify(unique));
+    return unique;
+  }
+  function randomWrongs() { return getStoredList(RANDOM_WRONG_KEY); }
+  function quizWrongs() { return getStoredList(QUIZ_WRONG_KEY); }
+  function saveRandomWrongs(arr) { return saveStoredList(RANDOM_WRONG_KEY, arr); }
+  function saveQuizWrongs(arr) { return saveStoredList(QUIZ_WRONG_KEY, arr); }
+
+  function saveWrongs(arr) {
+    const unique = Array.from(new Set(arr.map(Number).filter(Boolean)));
+    localStorage.setItem(WRONG_KEY, JSON.stringify(unique));
+    refreshStats();
+    if (typeof renderWrongStats === "function") renderWrongStats();
+    return unique;
+  }
+  function clearWrongs() {
+    localStorage.removeItem(WRONG_KEY);
+    localStorage.removeItem(RANDOM_WRONG_KEY);
+    localStorage.removeItem(QUIZ_WRONG_KEY);
+    refreshStats();
+    document.querySelectorAll(".wrong-marked").forEach(node => node.classList.remove("wrong-marked"));
+    renderWrong();
+    renderCard();
+    renderRandomCard();
+    applyQuizWrongMarks();
+  }
+  function refreshStats() {
+    el("total").textContent = TERMS.length;
+    el("wrongN").textContent = wrongs().length;
+  }
+  function setActiveButton(buttonId) {
+    document.querySelectorAll(".tabs button").forEach(btn => {
+      btn.classList.remove("active-tab");
+      btn.classList.remove("primary");
+    });
+    const btn = el(buttonId);
+    if (btn) {
+      btn.classList.add("active-tab");
+      btn.classList.add("primary");
+    }
+  }
+  function setMode(name, buttonId) {
+    ["studyMode","randomAllMode","quizMode","wrongMode"].forEach(id => el(id).classList.remove("on"));
+    el(name).classList.add("on");
+    setActiveButton(buttonId);
+    if (name === "quizMode" && quiz.length === 0) makeQuiz();
+    if (name === "quizMode") applyQuizWrongMarks();
+    if (name === "randomAllMode" && randomDeck.length === 0) makeRandomAll();
+    if (name === "wrongMode") renderWrong();
+  }
+  function initCat() {
+    el("cat").innerHTML = '<option value="">전체 분류</option>' + CATS.map(c => `<option>${esc(c)}</option>`).join("");
+  }
+  function applyFilter() {
+    const c = el("cat").value;
+    const s = el("search").value.trim().toLowerCase();
+    deck = TERMS.filter(t => (!c || t.cat === c) && (!s || (t.q+" "+t.mean+" "+t.term+" "+t.abbr+" "+t.cat).toLowerCase().includes(s)));
+    idx = 0;
+    answerOpen = false;
+    renderCard();
+    renderMini();
+  }
+  function renderMini() {
+    if (!deck.length) {
+      el("mini").innerHTML = '<div class="notice">표시할 단어가 없습니다.</div>';
+      return;
+    }
+    el("mini").innerHTML = deck.map((t,i)=>`
+      <div class="item ${i===idx ? "active" : ""}" data-i="${i}">
+        <b>${esc(t.q)}</b><small>#${t.no} · ${esc(t.mean)}</small>
+      </div>`).join("");
+    document.querySelectorAll("#mini .item").forEach(node => {
+      node.onclick = () => {
+        idx = Number(node.dataset.i);
+        answerOpen = false;
+        renderCard();
+        renderMini();
+      };
+    });
+  }
+
+  function applyLengthClass(node, value) {
+    if (!node) return;
+    const len = String(value || "").length;
+    node.classList.remove("long-text", "extra-long-text");
+    if (len >= 32) node.classList.add("extra-long-text");
+    else if (len >= 20) node.classList.add("long-text");
+  }
+
+  function applyLengthClass(node, value) {
+    if (!node) return;
+    node.classList.remove("long-text", "extra-long-text");
+  }
+
+  function fitTextToOneLine(node, maxPx = null, minPx = 10) {
+    if (!node) return;
+
+    // 카드/부모 폭은 유지하고, 글자만 줄인다.
+    node.style.fontSize = "";
+    node.style.whiteSpace = "nowrap";
+    node.style.overflow = "hidden";
+    node.style.textOverflow = "clip";
+    node.style.width = "100%";
+    node.style.maxWidth = "100%";
+    node.style.minWidth = "0";
+
+    const card = node.closest(".card") || node.parentElement;
+    const cardWidth = card ? card.clientWidth : node.clientWidth;
+    const availableWidth = Math.max(80, cardWidth - 56); // 카드 padding 고려
+
+    let size = parseFloat(window.getComputedStyle(node).fontSize) || 42;
+    if (maxPx) size = Math.min(size, maxPx);
+    node.style.fontSize = size + "px";
+
+    // scrollWidth가 사용 가능한 폭보다 크면 폰트만 줄임
+    while (node.scrollWidth > availableWidth && size > minPx) {
+      size -= 1;
+      node.style.fontSize = size + "px";
+    }
+  }
+
+  function fitSubAnswerToOneLine() {
+    document.querySelectorAll(".answer .subanswer").forEach(node => {
+      node.style.fontSize = "18px";
+      node.style.whiteSpace = "nowrap";
+      node.style.overflow = "hidden";
+      node.style.textOverflow = "clip";
+      let size = 18;
+      const parentWidth = node.parentElement ? node.parentElement.clientWidth - 24 : node.clientWidth;
+      while (node.scrollWidth > parentWidth && size > 10) {
+        size -= 1;
+        node.style.fontSize = size + "px";
+      }
+    });
+  }
+
+
+  function answerHtml(t) {
+    const termLen = String(t.term || "").length;
+    const termClass = termLen >= 42 ? "subanswer extra-long-text" : (termLen >= 28 ? "subanswer long-text" : "subanswer");
+    return `${esc(t.mean)}${t.abbr ? `<span class="${termClass}">${esc(t.term)}</span>` : ""}`;
+  }
+  function renderCard() {
+    if (!deck.length) {
+      el("prog").textContent = "0 / 0";
+      el("qText").textContent = "-";
+      applyLengthClass(el("qText"), "");
+      el("aText").style.display = "none";
+      el("card").classList.remove("wrong-marked");
+      return;
+    }
+    const t = deck[idx];
+    el("prog").textContent = `${idx+1} / ${deck.length} · 원래번호 #${t.no} · ${t.cat}`;
+    el("qText").textContent = t.q;
+    applyLengthClass(el("qText"), t.q);
+    fitTextToOneLine(el("qText"), null, 10);
+    el("hint").textContent = `${t.kind} 출제 · 한글 뜻을 떠올려보세요`;
+    el("aText").innerHTML = answerHtml(t);
+    el("aText").style.display = answerOpen ? "block" : "none";
+    if (answerOpen) fitSubAnswerToOneLine();
+    el("showAnswer").textContent = answerOpen ? "정답 숨기기" : "정답 보기";
+    el("card").classList.toggle("wrong-marked", wrongs().includes(t.no));
+  }
+  function next() { if(deck.length) { idx=(idx+1)%deck.length; answerOpen=false; renderCard(); renderMini(); } }
+  function prev() { if(deck.length) { idx=(idx-1+deck.length)%deck.length; answerOpen=false; renderCard(); renderMini(); } }
+  function addWrong() {
+    if (!deck.length) return;
+    saveWrongs([...wrongs(), deck[idx].no]);
+    renderCard();
+    renderMini();
+  }
+  function removeWrong() {
+    if (!deck.length) return;
+    const no = deck[idx].no;
+    saveWrongs(wrongs().filter(n => n !== no));
+    saveRandomWrongs(randomWrongs().filter(n => n !== no));
+    saveQuizWrongs(quizWrongs().filter(n => n !== no));
+    renderCard();
+    renderMini();
+    renderRandomCard();
+    applyQuizWrongMarks();
+  }
+  function shuffle(a) {
+    for (let i=a.length-1; i>0; i--) {
+      const j = Math.floor(Math.random() * (i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+  }
+  function makeQuiz() {
+    const pool = TERMS.slice();
+    shuffle(pool);
+    quiz = pool.slice(0, Math.min(100, pool.length)).sort((a,b)=>a.no-b.no);
+    quizOpened = new Set();
+    quizCompletedShown = false;
+    saveQuizWrongs([]);
+    renderQuiz();
+  }
+  function renderQuiz() {
+    el("quizList").innerHTML = quiz.map((t,i)=>`
+      <details class="qrow" data-no="${t.no}" data-quiz-index="${i}">
+        <summary><span class="quiz-question">${i+1}. ${esc(t.q)} : __________</span></summary>
+        <div class="ans">정답: ${esc(t.mean)}</div>
+        ${t.abbr ? `<div class="meta">${esc(t.term)}</div>` : ""}
+        <div class="quiz-part"><b>파트:</b> ${esc(t.cat)}</div>
+        <button class="bad" type="button" data-add-quiz-wrong="${t.no}">오답 저장</button><span class="wrong-saved">저장됨</span>
+      </details>`).join("");
+    applyQuizWrongMarks();
+  }
+
+  function markQuizOpened(index) {
+    if (index === null || index === undefined || Number.isNaN(Number(index))) return;
+    quizOpened.add(Number(index));
+    completeQuizIfNeeded();
+  }
+
+  function completeQuizIfNeeded() {
+    if (!quizCompletedShown && quiz.length && quizOpened.size >= quiz.length) {
+      quizCompletedShown = true;
+      localStorage.setItem("med_word_last_quiz_completed_at", new Date().toLocaleString("ko-KR"));
+      return true;
+    }
+    return false;
+  }
+
+  function openAll() {
+    document.querySelectorAll("#quizList details").forEach(d => {
+      d.open = true;
+      markQuizOpened(d.dataset.quizIndex);
+    });
+    completeQuizIfNeeded();
+  }
+  function makeRandomAll() {
+    randomDeck = TERMS.slice();
+    shuffle(randomDeck);
+    randomIdx = 0;
+    randomAnswerOpen = false;
+    randomSeen = new Set();
+    saveRandomWrongs([]);
+    renderRandomCard();
+  }
+  function renderRandomCard() {
+    if (!randomDeck.length) {
+      el("randomProg").textContent = "0 / 0";
+      el("randomQText").textContent = "-";
+      applyLengthClass(el("randomQText"), "");
+      el("randomAText").style.display = "none";
+      el("randomCard").classList.remove("wrong-marked");
+      return;
+    }
+    const t = randomDeck[randomIdx];
+    markRandomProgress(t.no);
+    el("randomProg").textContent = `${randomIdx+1} / ${randomDeck.length}`;
+    el("randomQText").textContent = t.q;
+    applyLengthClass(el("randomQText"), t.q);
+    fitTextToOneLine(el("randomQText"), null, 10);
+    el("randomHint").textContent = "한글 뜻을 떠올려보세요";
+    el("randomAText").innerHTML = `${answerHtml(t)}<span class="subanswer">파트: ${esc(t.cat)}</span>`;
+    el("randomAText").style.display = randomAnswerOpen ? "block" : "none";
+    if (randomAnswerOpen) fitSubAnswerToOneLine();
+    el("randomShowAnswer").textContent = randomAnswerOpen ? "정답 숨기기" : "정답 보기";
+    el("randomCard").classList.toggle("wrong-marked", randomWrongs().includes(t.no));
+  }
+  function randomNextCard() {
+    if (!randomDeck.length) return;
+    const wasLast = randomIdx === randomDeck.length - 1;
+    if (wasLast) {
+      markRandomProgress(randomDeck[randomIdx].no);
+      completeRandomTestIfNeeded();
+    }
+    randomIdx = (randomIdx + 1) % randomDeck.length;
+    randomAnswerOpen = false;
+    renderRandomCard();
+  }
+  function randomPrevCard() { if(randomDeck.length) { randomIdx=(randomIdx-1+randomDeck.length)%randomDeck.length; randomAnswerOpen=false; renderRandomCard(); } }
+  function randomAddWrong() {
+    if (!randomDeck.length) return;
+    const no = randomDeck[randomIdx].no;
+    saveWrongs([...wrongs(), no]);
+    saveRandomWrongs([...randomWrongs(), no]);
+    renderRandomCard();
+  }
+  function randomRemoveWrong() {
+    if (!randomDeck.length) return;
+    const no = randomDeck[randomIdx].no;
+    saveRandomWrongs(randomWrongs().filter(n => n !== no));
+    saveWrongs(wrongs().filter(n => n !== no));
+    renderRandomCard();
+    applyQuizWrongMarks();
+  }
+  function applyQuizWrongMarks() {
+    const set = new Set(wrongs());
+    document.querySelectorAll(".qrow[data-no]").forEach(row => {
+      row.classList.toggle("wrong-marked", set.has(Number(row.dataset.no)));
+    });
+  }
+
+
+  function markRandomProgress(no) {
+    if (!no) return;
+    randomSeen.add(Number(no));
+  }
+
+  function completeRandomTestIfNeeded() {
+    if (randomDeck.length && randomSeen.size >= randomDeck.length) {
+      const now = new Date();
+      lastRandomCompletedAt = now.toLocaleString("ko-KR");
+      localStorage.setItem("med_word_last_random_completed_at", lastRandomCompletedAt);
+      return true;
+    }
+    return false;
+  }
+
+
+  function buildWrongStatsHtml(targetWrongList) {
+    const wrongSet = new Set((targetWrongList || []).map(Number));
+    const rows = CATS.map(cat => {
+      const total = TERMS.filter(t => t.cat === cat).length;
+      const wrongCount = TERMS.filter(t => t.cat === cat && wrongSet.has(t.no)).length;
+      const rate = total ? Math.round((wrongCount / total) * 100) : 0;
+      return { cat, total, wrongCount, rate };
+    }).filter(row => row.wrongCount > 0)
+      .sort((a, b) => b.rate - a.rate || b.wrongCount - a.wrongCount || a.cat.localeCompare(b.cat));
+
+    if (!rows.length) {
+      return '<div class="wrong-stats-empty">이 테스트에서 표시된 오답이 없습니다.</div>';
+    }
+
+    return rows.map(row => `
+      <div class="wrong-stat-row">
+        <div>
+          <div class="wrong-stat-name">${esc(row.cat)}</div>
+          <div class="wrong-stat-count">${row.wrongCount}개 오답 / 전체 ${row.total}개</div>
+        </div>
+        <div class="wrong-stat-bar">
+          <div class="wrong-stat-fill" style="width:${row.rate}%"></div>
+        </div>
+        <div class="wrong-stat-rate">${row.rate}%</div>
+      </div>
+    `).join("");
+  }
+
+  function getResultWrongList(type) {
+    if (type === "quiz") return quizWrongs();
+    if (type === "random") return randomWrongs();
+    return wrongs();
+  }
+
+  function showResultModal(type, completedCount, totalCount) {
+    const resultWrongList = getResultWrongList(type);
+    const wrongCount = resultWrongList.length;
+    const wrongRate = totalCount ? Math.round((wrongCount / totalCount) * 100) : 0;
+    const nowText = new Date().toLocaleString("ko-KR");
+
+    el("resultKicker").textContent = "테스트 결과분석";
+    el("resultTitle").textContent = type === "quiz" ? "100문제 시험 결과" : "전체순서 랜덤카드 결과";
+    el("resultSummary").innerHTML = `
+      <div class="result-stat">
+        <b>${completedCount} / ${totalCount}</b>
+        <span>진행한 문제</span>
+      </div>
+      <div class="result-stat">
+        <b>${wrongCount}</b>
+        <span>이 테스트 오답 수</span>
+      </div>
+      <div class="result-stat">
+        <b>${wrongRate}%</b>
+        <span>이 테스트 오답비율</span>
+      </div>
+    `;
+    el("resultWrongStats").innerHTML = buildWrongStatsHtml(resultWrongList);
+    el("resultModal").classList.add("on");
+    el("resultModal").setAttribute("aria-hidden", "false");
+
+    if (type === "random") {
+      localStorage.setItem("med_word_last_random_completed_at", nowText);
+    } else {
+      localStorage.setItem("med_word_last_quiz_completed_at", nowText);
+    }
+  }
+
+
+  function buildResultSummaryHtml(type, completedCount, totalCount) {
+    const resultWrongList = getResultWrongList(type);
+    const wrongCount = resultWrongList.length;
+    const wrongRate = totalCount ? Math.round((wrongCount / totalCount) * 100) : 0;
+    return `
+      <div class="result-summary">
+        <div class="result-stat">
+          <b>${completedCount} / ${totalCount}</b>
+          <span>진행한 문제</span>
+        </div>
+        <div class="result-stat">
+          <b>${wrongCount}</b>
+          <span>이 테스트 오답 수</span>
+        </div>
+        <div class="result-stat">
+          <b>${wrongRate}%</b>
+          <span>이 테스트 오답비율</span>
+        </div>
+      </div>
+      <div class="wrong-stats-box result-wrong-stats">
+        <h3>파트별 오답비율</h3>
+        <p class="meta">오답비율 = 이 테스트의 해당 파트 오답 수 / 해당 파트 전체 단어 수</p>
+        <div class="wrong-stats">${buildWrongStatsHtml(resultWrongList)}</div>
+      </div>
+    `;
+  }
+
+  function renderRandomInlineResult() {
+    const box = el("randomInlineResult");
+    if (!box) return;
+    const completed = randomDeck.length ? randomSeen.size : 0;
+    const total = randomDeck.length || TERMS.length;
+    box.innerHTML = buildResultSummaryHtml("random", completed, total);
+  }
+
+  function showQuizResult() {
+    showResultModal("quiz", quizOpened.size, quiz.length || 100);
+  }
+
+  function showRandomResult() {
+    const completed = randomDeck.length ? randomSeen.size : 0;
+    const total = randomDeck.length || TERMS.length;
+    showResultModal("random", completed, total);
+  }
+
+
+  function showAllWrongAnalysis() {
+    const allWrongList = wrongs();
+    const wrongCount = allWrongList.length;
+    const totalTerms = TERMS.length;
+    const wrongRate = totalTerms ? Math.round((wrongCount / totalTerms) * 100) : 0;
+    const wrongPartCount = CATS.filter(cat =>
+      TERMS.some(t => t.cat === cat && allWrongList.includes(t.no))
+    ).length;
+
+    el("resultKicker").textContent = "전체 오답노트";
+    el("resultTitle").textContent = "전체오답노트 분석";
+    el("resultSummary").innerHTML = `
+      <div class="result-stat">
+        <b>${wrongCount}</b>
+        <span>전체 오답 수</span>
+      </div>
+      <div class="result-stat">
+        <b>${wrongRate}%</b>
+        <span>전체 단어 대비 오답비율</span>
+      </div>
+      <div class="result-stat">
+        <b>${wrongPartCount}</b>
+        <span>오답이 있는 파트 수</span>
+      </div>
+    `;
+    el("resultWrongStats").innerHTML = buildWrongStatsHtml(allWrongList);
+    el("resultModal").classList.add("on");
+    el("resultModal").setAttribute("aria-hidden", "false");
+  }
+
+  function closeResultModal() {
+    el("resultModal").classList.remove("on");
+    el("resultModal").setAttribute("aria-hidden", "true");
+  }
+
+  function renderWrongStats() {
+    const wrongSet = new Set(wrongs());
+    const rows = CATS.map(cat => {
+      const total = TERMS.filter(t => t.cat === cat).length;
+      const wrongCount = TERMS.filter(t => t.cat === cat && wrongSet.has(t.no)).length;
+      const rate = total ? Math.round((wrongCount / total) * 100) : 0;
+      return { cat, total, wrongCount, rate };
+    }).filter(row => row.wrongCount > 0)
+      .sort((a, b) => b.rate - a.rate || b.wrongCount - a.wrongCount || a.cat.localeCompare(b.cat));
+
+    const box = el("wrongStats");
+    if (!box) return;
+
+    if (!rows.length) {
+      box.innerHTML = '<div class="wrong-stats-empty">아직 오답이 없습니다.</div>';
+      return;
+    }
+
+    box.innerHTML = rows.map(row => `
+      <div class="wrong-stat-row">
+        <div>
+          <div class="wrong-stat-name">${esc(row.cat)}</div>
+          <div class="wrong-stat-count">${row.wrongCount}개 오답 / 전체 ${row.total}개</div>
+        </div>
+        <div class="wrong-stat-bar">
+          <div class="wrong-stat-fill" style="width:${row.rate}%"></div>
+        </div>
+        <div class="wrong-stat-rate">${row.rate}%</div>
+      </div>
+    `).join("");
+  }
+
+  function renderWrong() {
+    renderWrongStats();
+    const set = new Set(wrongs());
+    const arr = TERMS.filter(t => set.has(t.no));
+    if (!arr.length) {
+      el("wrongList").innerHTML = '<div class="notice">오답노트가 비어 있습니다.</div>';
+      return;
+    }
+    el("wrongList").innerHTML = arr.map((t,i)=>`
+      <details class="qrow wrong-marked" open data-no="${t.no}">
+        <summary>${i+1}. ${esc(t.q)} → ${esc(t.mean)}</summary>
+        ${t.abbr ? `<div class="meta">${esc(t.term)}</div>` : ""}
+        <div class="quiz-part"><b>파트:</b> ${esc(t.cat)}</div>
+        <button class="ok" type="button" data-remove-wrong="${t.no}">외웠음 / 제거</button>
+      </details>`).join("");
+  }
+  function wrongStudy() {
+    const set = new Set(wrongs());
+    deck = TERMS.filter(t => set.has(t.no));
+    idx = 0;
+    answerOpen = false;
+    setMode("studyMode", "btnWrongStudy");
+    renderCard();
+    renderMini();
+  }
+
+  function bindEvents() {
+    el("btnStudy").onclick = () => setMode("studyMode", "btnStudy");
+    el("btnRandomAll").onclick = () => setMode("randomAllMode", "btnRandomAll");
+    el("btnQuiz").onclick = () => setMode("quizMode", "btnQuiz");
+    el("btnWrong").onclick = () => setMode("wrongMode", "btnWrong");
+    el("btnWrongStudy").onclick = wrongStudy;
+
+    el("cat").onchange = applyFilter;
+    el("search").oninput = applyFilter;
+    el("reset").onclick = () => { el("cat").value=""; el("search").value=""; applyFilter(); };
+
+    el("prev").onclick = prev;
+    el("next").onclick = next;
+    el("showAnswer").onclick = () => { answerOpen = !answerOpen; renderCard(); };
+    el("card").onclick = () => { answerOpen = !answerOpen; renderCard(); };
+    el("addWrong").onclick = addWrong;
+    el("removeWrong").onclick = removeWrong;
+
+    el("shuffleAll").onclick = makeRandomAll;
+    el("randomPrev").onclick = randomPrevCard;
+    el("randomNext").onclick = randomNextCard;
+    el("randomShowAnswer").onclick = () => { randomAnswerOpen = !randomAnswerOpen; renderRandomCard(); };
+    el("randomCard").onclick = () => { randomAnswerOpen = !randomAnswerOpen; renderRandomCard(); };
+    el("randomAddWrong").onclick = randomAddWrong;
+    el("randomRemoveWrong").onclick = randomRemoveWrong;
+    el("randomShowResult").onclick = showRandomResult;
+
+    el("newQuiz").onclick = makeQuiz;
+    el("openAll").onclick = openAll;
+    el("quizShowResult").onclick = showQuizResult;
+    el("clearWrong").onclick = clearWrongs;
+    el("allWrongAnalysis").onclick = showAllWrongAnalysis;
+    el("closeResult").onclick = closeResultModal;
+    el("resultModal").onclick = ev => { if (ev.target === el("resultModal")) closeResultModal(); };
+
+
+    document.addEventListener("toggle", ev => {
+      const d = ev.target;
+      if (d && d.matches && d.matches("#quizList details") && d.open) {
+        markQuizOpened(d.dataset.quizIndex);
+      }
+    }, true);
+
+    document.addEventListener("click", ev => {
+      const add = ev.target.closest("[data-add-quiz-wrong]");
+      if (add) {
+        const no = Number(add.dataset.addQuizWrong);
+        saveWrongs([...wrongs(), no]);
+        saveQuizWrongs([...quizWrongs(), no]);
+        applyQuizWrongMarks();
+        renderRandomCard();
+            return;
+      }
+      const remove = ev.target.closest("[data-remove-wrong]");
+      if (remove) {
+        const no = Number(remove.dataset.removeWrong);
+        saveWrongs(wrongs().filter(n => n !== no));
+        saveRandomWrongs(randomWrongs().filter(n => n !== no));
+        saveQuizWrongs(quizWrongs().filter(n => n !== no));
+        renderWrong();
+        renderCard();
+        renderRandomCard();
+        applyQuizWrongMarks();
+          }
+    });
+
+
+    window.addEventListener("resize", () => {
+      if (el("studyMode").classList.contains("on") && deck.length) {
+        fitTextToOneLine(el("qText"), null, 10);
+        if (answerOpen) fitSubAnswerToOneLine();
+      }
+      if (el("randomAllMode").classList.contains("on") && randomDeck.length) {
+        fitTextToOneLine(el("randomQText"), null, 10);
+        if (randomAnswerOpen) fitSubAnswerToOneLine();
+      }
+    });
+
+    document.addEventListener("keydown", e => {
+      if (["INPUT","SELECT"].includes(document.activeElement.tagName)) return;
+      const randomModeOn = el("randomAllMode").classList.contains("on");
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (randomModeOn) { randomAnswerOpen = !randomAnswerOpen; renderRandomCard(); }
+        else { answerOpen = !answerOpen; renderCard(); }
+      }
+      if (e.key === "ArrowRight") randomModeOn ? randomNextCard() : next();
+      if (e.key === "ArrowLeft") randomModeOn ? randomPrevCard() : prev();
+      if (e.key.toLowerCase() === "w") randomModeOn ? randomAddWrong() : addWrong();
+      if (e.key.toLowerCase() === "e") randomModeOn ? randomRemoveWrong() : removeWrong();
+      if (e.key === "Escape") closeResultModal();
+    });
+  }
+
+  initCat();
+  refreshStats();
+  applyFilter();
+  bindEvents();
+})();
+</script>
+</body>
+</html>
