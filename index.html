@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>지도교수님께 할 질문 정리 – 실험 설계 및 해석 중심</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --ink: #182033;
+      --muted: #667085;
+      --line: #d9e0ec;
+      --primary: #2f5acf;
+      --primary-light: #eaf0ff;
+      --danger: #c0392b;
+      --danger-light: #fff0ed;
+      --warn: #ad6b00;
+      --warn-light: #fff6e5;
+      --ok: #16734d;
+      --ok-light: #e8f6ef;
+      --shadow: 0 10px 25px rgba(24, 32, 51, 0.08);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.68;
+    }
+
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 44px 22px 72px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1f3c88 0%, #2f5acf 58%, #5a7cff 100%);
+      color: #fff;
+      border-radius: 24px;
+      padding: 38px 38px 34px;
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+    }
+
+    header p {
+      margin: 0;
+      max-width: 880px;
+      font-size: 16px;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.24);
+      color: #fff;
+    }
+
+    nav {
+      margin: 24px 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    nav strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 5px 14px 5px 0;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 14px;
+      font-size: 25px;
+      letter-spacing: -0.025em;
+    }
+
+    .section-title .bar {
+      width: 7px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--primary);
+      display: inline-block;
+    }
+
+    .lead-card,
+    .card,
+    .message-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .lead-card {
+      padding: 24px 26px;
+      margin-top: 24px;
+    }
+
+    .lead-card h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.025em;
+    }
+
+    .lead-card p { margin: 8px 0; }
+
+    .quick-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .quick-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 13px 14px;
+      background: #fbfcff;
+      font-size: 14px;
+    }
+
+    .quick-item b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--primary);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      padding: 22px 24px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .tag.critical { background: var(--danger-light); color: var(--danger); }
+    .tag.major { background: var(--warn-light); color: var(--warn); }
+    .tag.safe { background: var(--ok-light); color: var(--ok); }
+    .tag.method { background: var(--primary-light); color: var(--primary); }
+
+    .question {
+      margin: 14px 0;
+      padding: 15px 16px;
+      border-left: 5px solid var(--primary);
+      background: var(--primary-light);
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .why,
+    .response {
+      margin-top: 10px;
+      padding: 13px 15px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e5eaf2;
+    }
+
+    .why b,
+    .response b { color: #28344f; }
+
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+
+    .priority-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+    }
+
+    .priority-table th,
+    .priority-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      vertical-align: top;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .priority-table th {
+      background: #eef3ff;
+      color: #1e2d55;
+      font-weight: 800;
+    }
+
+    .priority-table tr:last-child td { border-bottom: 0; }
+
+    .message-box {
+      padding: 20px 22px;
+      background: #fbfcff;
+    }
+
+    .message-box pre {
+      white-space: pre-wrap;
+      word-break: keep-all;
+      margin: 0;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .footer {
+      margin-top: 38px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 780px) {
+      header { padding: 30px 24px; }
+      header h1 { font-size: 27px; }
+      .quick-list { grid-template-columns: 1fr; }
+      .wrap { padding: 24px 14px 52px; }
+      .card, .lead-card, .message-box { padding: 18px; }
+      .priority-table th,
+      .priority-table td { font-size: 13px; padding: 10px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .wrap { max-width: none; padding: 0; }
+      header, nav, .lead-card, .card, .message-box, .priority-table { box-shadow: none; }
+      nav { display: none; }
+      a { color: inherit; }
+      .card { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>지도교수님께 할 질문 정리<br />실험 설계·분석·해석상 허점 중심</h1>
+      <p>
+        Dual RNA-seq 기반 oral cancer–periodontal pathogen small RNA 분석 원고를 기준으로,
+        형식적 수정사항보다 과학적 타당성, 분석 방법, 결과 해석의 방어 가능성을 점검하기 위한 질문 목록입니다.
+      </p>
+      <div class="meta">
+        <span class="pill">실험/분석 validity</span>
+        <span class="pill">해석 강도 조절</span>
+        <span class="pill">교수님 면담용</span>
+        <span class="pill">우선순위 포함</span>
+      </div>
+    </header>
+
+    <nav>
+      <strong>목차</strong>
+      <a href="#summary">핵심 요약</a>
+      <a href="#priority">우선순위 TOP 7</a>
+      <a href="#questions">상세 질문</a>
+      <a href="#minor">보조 체크리스트</a>
+      <a href="#message">교수님께 보낼 메시지</a>
+    </nav>
+
+    <section id="summary" class="lead-card">
+      <h2>핵심 판단</h2>
+      <p>
+        이 논문의 가장 큰 쟁점은 “<b>진짜 periodontal pathogen-derived msRNA를 검출한 것인가</b>”와
+        “<b>통계적으로 유의하지 않은 tendency를 어디까지 biological interpretation으로 확장해도 되는가</b>”입니다.
+      </p>
+      <p>
+        따라서 지도교수님께는 단순 오타나 figure 형식보다, public small/ncRNA-seq dataset을 host depletion 후 bacterial reference에 mapping한 분석 자체의 타당성,
+        짧은 read의 specificity, contamination 가능성, periodontal status confounding, non-significant result의 해석 강도를 우선적으로 확인하는 것이 좋습니다.
+      </p>
+      <div class="quick-list">
+        <div class="quick-item"><b>가장 큰 실험적 약점</b>원래 bacterial msRNA 검출용으로 설계된 dataset이 아님.</div>
+        <div class="quick-item"><b>가장 큰 분석상 약점</b>짧은 small RNA read의 bacterial perfect-match가 진짜 pathogen-derived signal인지 불명확.</div>
+        <div class="quick-item"><b>가장 큰 해석상 약점</b>모든 비교가 non-significant인데 EV, onset, malignant transformation으로 확장 해석.</div>
+        <div class="quick-item"><b>가장 큰 confounder</b>periodontal status, oral hygiene, smoking, alcohol, antibiotics 정보 부족.</div>
+      </div>
+    </section>
+
+    <section id="priority">
+      <h2 class="section-title"><span class="bar"></span>우선순위 TOP 7</h2>
+      <table class="priority-table">
+        <thead>
+          <tr>
+            <th style="width: 80px;">순위</th>
+            <th>교수님께 확인할 핵심 질문</th>
+            <th>왜 중요한가</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>1</b></td>
+            <td>이 public small/ncRNA-seq dataset이 bacterial msRNA를 보기 적합한 데이터인가요?</td>
+            <td>연구의 가장 근본적인 validity 문제.</td>
+          </tr>
+          <tr>
+            <td><b>2</b></td>
+            <td>짧은 host-unmapped read가 bacterial genome에 perfect-match된 것을 진짜 pathogen-derived small RNA라고 볼 수 있나요?</td>
+            <td>우연한 match, conserved RNA fragment, cross-mapping 가능성.</td>
+          </tr>
+          <tr>
+            <td><b>3</b></td>
+            <td>known msRNA annotation이나 qPCR validation 없이 “msRNA”라고 표현해도 되나요?</td>
+            <td>표현이 너무 강하면 실제 mature bacterial sRNA를 검증한 것처럼 보일 수 있음.</td>
+          </tr>
+          <tr>
+            <td><b>4</b></td>
+            <td>negative control 없이 contamination 가능성을 어떻게 배제하나요?</td>
+            <td>low-biomass tissue sequencing에서 가장 자주 지적되는 문제.</td>
+          </tr>
+          <tr>
+            <td><b>5</b></td>
+            <td>periodontal status가 없는데 red complex signal을 OSCC와 연결해도 되나요?</td>
+            <td>OSCC effect인지 periodontitis effect인지 분리 불가.</td>
+          </tr>
+          <tr>
+            <td><b>6</b></td>
+            <td>모든 결과가 non-significant인데 EV mechanism, onset, malignant transformation 해석을 어느 정도까지 써도 되나요?</td>
+            <td>Discussion의 과장 가능성 조절 필요.</td>
+          </tr>
+          <tr>
+            <td><b>7</b></td>
+            <td>PS2 high-signal saliva sample을 제외해도 saliva tendency가 유지되나요?</td>
+            <td>outlier 하나가 결과를 끌고 갈 가능성 확인.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="questions">
+      <h2 class="section-title"><span class="bar"></span>상세 질문 정리</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="tag-row"><span class="tag critical">Critical</span><span class="tag method">Dataset suitability</span></div>
+          <h3>1. 데이터 자체가 bacterial small RNA 분석에 적합한가?</h3>
+          <div class="question">
+            교수님, 이 연구는 원래 microbial RNA 검출용으로 설계된 dataset이 아니라 public human small/ncRNA-seq dataset을 재분석한 것입니다. 이런 데이터에서 host-unmapped read를 bacterial reference에 mapping해서 periodontal pathogen-derived small RNA signal로 해석하는 것이 충분히 타당할까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> 이 질문은 논문 전체의 foundation을 건드립니다. 데이터가 애초에 bacterial msRNA 보존·검출에 최적화되지 않았다면, 결과는 “bacterial msRNA detection”이라기보다 “putative bacterial-reference-matched short read signal”로 제한해야 합니다.</div>
+          <div class="response"><b>대응 방향:</b> 제목·Abstract·Discussion에서 “dual RNA-seq-based reanalysis,” “host-depleted bacterial small RNA read signals,” “putative”를 사용해 해석 범위를 낮춥니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag critical">Critical</span><span class="tag method">Read specificity</span></div>
+          <h3>2. 짧은 read의 bacterial perfect-match를 진짜 세균 유래로 볼 수 있는가?</h3>
+          <div class="question">
+            교수님, read length가 짧은 small RNA-seq read를 bacterial genome reference에 perfect-match로 mapping했는데, 짧은 sequence는 human genome, repetitive sequence, conserved RNA fragment, 다른 bacteria에도 우연히 match될 가능성이 있지 않을까요? 추가 subtraction, competitive alignment, unique-mappability filtering이 필요할까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> 0 mismatch perfect match는 얼핏 specificity가 높아 보이지만, small RNA read가 짧을수록 우연한 perfect match 가능성이 증가합니다. 또한 독립 strain alignment에서는 closely related strain 사이에 read evidence가 공유될 수 있습니다.</div>
+          <div class="response"><b>대응 방향:</b> “strain-reference-matched signal”로 표현하고, species-level abundance처럼 해석하지 않습니다. 가능하면 human/rRNA/tRNA/miRNA 추가 제거 또는 unique mapping 확인을 제안합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag critical">Critical</span><span class="tag method">msRNA validation</span></div>
+          <h3>3. 검출된 signal을 msRNA라고 불러도 되는가?</h3>
+          <div class="question">
+            교수님, 본 연구에서 검출된 signal은 bacterial genome reference에 mapping된 short read signal이지, known bacterial msRNA locus에 annotation되었거나 mature msRNA로 qPCR validation된 것은 아닙니다. 그렇다면 “periodontal pathogen-derived msRNAs”라고 표현하는 것이 너무 강하지 않을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> 실제 분석 단위는 mature regulatory msRNA가 아니라 bacterial reference에 match된 short read count입니다. msRNA라고 단정하면 실험적으로 검증한 것처럼 보일 수 있습니다.</div>
+          <div class="response"><b>대응 방향:</b> 첫 등장에서는 “putative periodontal pathogen-derived small/ncRNA read signals”라고 쓰고, 이후에는 “small RNA signals” 정도로 줄여 씁니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag critical">Critical</span><span class="tag method">Contamination</span></div>
+          <h3>4. Negative control 없이 contamination을 배제할 수 있는가?</h3>
+          <div class="question">
+            교수님, tumor tissue나 archived public small RNA-seq data에서 낮은 수준의 bacterial-like reads가 검출되었을 때, 이것이 실제 oral pathogen-derived signal인지, library preparation/reagent contamination, index hopping, environmental contamination인지 구분할 수 있을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> low-biomass tissue sequencing에서는 contamination이 매우 중요한 문제입니다. 특히 tissue sample에서 bacterial read가 적다면 contamination control 부재가 해석상 큰 약점이 됩니다.</div>
+          <div class="response"><b>대응 방향:</b> limitation에 “negative extraction controls were unavailable”를 명확히 넣고, future work에 negative control, spike-in, EV isolation을 추가합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag critical">Critical</span><span class="tag method">Confounding</span></div>
+          <h3>5. Periodontal status 없이 OSCC와 red complex를 연결해도 되는가?</h3>
+          <div class="question">
+            교수님, red complex bacteria는 기본적으로 periodontitis와 강하게 관련된 균입니다. 그런데 public dataset에서 환자들의 periodontal status, oral hygiene, smoking, alcohol, antibiotic exposure 등이 통제되지 않았습니다. 그렇다면 OSCC saliva에서 red complex signal이 높아진 tendency가 OSCC 자체 때문인지, periodontitis 때문인지 구분할 수 없지 않을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> red complex 증가는 oral cancer보다 periodontitis를 반영할 가능성이 큽니다. 이 confounder를 통제하지 못하면 cancer-specific claim이 약해집니다.</div>
+          <div class="response"><b>대응 방향:</b> “OSCC-associated”보다 “oral cancer-related samples,” “periodontal inflammatory burden,” “dysbiotic oral environment”처럼 조심스럽게 표현합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag safe">Interpretation</span></div>
+          <h3>6. Non-significant result에서 mechanism을 어디까지 말할 수 있는가?</h3>
+          <div class="question">
+            교수님, 네 dataset 모두에서 통계적 유의성은 없고 tendency만 관찰되었습니다. 이 상황에서 EV-mediated communication, malignant transformation, oral cancer onset 같은 mechanism을 Discussion에서 길게 설명하는 것이 적절할까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> non-significant tendency를 바탕으로 causal mechanism을 강하게 말하면 과장으로 보일 수 있습니다.</div>
+          <div class="response"><b>대응 방향:</b> “one plausible mechanism,” “may explain,” “hypothesis-generating,” “requires validation”을 사용하고, “demonstrates,” “proves,” “confirms”는 피합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag method">Outlier</span></div>
+          <h3>7. PS2 high-signal sample이 saliva result를 끌고 가는가?</h3>
+          <div class="question">
+            교수님, GSE176077에서 PS2 sample이 bacterial mapped-read와 depth_sum이 매우 높은 high-signal sample으로 annotation되어 있습니다. OSCC saliva에서 red complex tendency가 이 sample 하나에 의해 만들어진 것은 아닌지 PS2-excluded sensitivity analysis를 추가하는 것이 좋을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> 표본 수가 작은 saliva cohort에서 outlier 하나가 전체 tendency를 만들 수 있습니다.</div>
+          <div class="response"><b>대응 방향:</b> 가능하면 PS2 포함/제외 결과를 supplement 또는 본문 한 문장으로 보고합니다. 제외 시 경향이 사라진다면 Discussion 해석 강도를 낮춥니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag method">Statistics</span></div>
+          <h3>8. GSE246050이 paired sample이면 통계 방법이 맞는가?</h3>
+          <div class="question">
+            교수님, GSE246050의 adjacent normal tissue와 OSCC tissue가 같은 환자에서 나온 paired sample인지 확인해야 할 것 같습니다. 만약 paired sample이라면 Mann-Whitney U test보다 paired Wilcoxon signed-rank test가 더 적절하지 않을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> paired design인데 independent test를 쓰면 통계 설계가 맞지 않을 수 있습니다. 또한 adjacent normal tissue는 완전한 healthy tissue가 아니라 field effect나 inflammation 영향을 받을 수 있습니다.</div>
+          <div class="response"><b>대응 방향:</b> sample origin을 확인하고, paired이면 통계 방법을 바꾸거나 limitation에 반영합니다. control 표현도 “healthy control”보다 “adjacent normal tissue”가 안전합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag method">Normalization</span></div>
+          <h3>9. Raw input reads 기준 RPM normalization이 적절한가?</h3>
+          <div class="question">
+            교수님, 이 연구에서는 bacterial RPM denominator로 trimmed reads나 host-depleted reads가 아니라 raw input reads를 사용했습니다. 그런데 sample마다 host RNA 비율이나 non-host fraction이 다르면, RPM 차이가 library composition 차이를 반영할 수 있지 않을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> raw-read denominator는 일관성은 있지만, host/non-host composition 차이에 민감할 수 있습니다. 반대로 host-depleted denominator도 bias가 있으므로 선택 근거가 필요합니다.</div>
+          <div class="response"><b>대응 방향:</b> RPM 정의를 figure caption과 Methods에서 통일하고, 가능하면 host-depleted read 기준 sensitivity normalization을 supplement로 확인합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag method">Strain reference</span></div>
+          <h3>10. 한 representative strain으로 species-level conclusion을 내도 되는가?</h3>
+          <div class="question">
+            교수님, full screening panel은 species당 4개 strain, 총 16개 strain이었지만 figure와 main analysis는 species당 one representative strain으로 제시했습니다. 한 representative strain 결과로 P. gingivalis 또는 T. denticola species-level tendency를 말해도 괜찮을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> strain마다 genome sequence, mappability, small RNA locus가 다를 수 있습니다. 특정 strain reference에서만 보이는 signal일 수 있습니다.</div>
+          <div class="response"><b>대응 방향:</b> “representative strain-matched signal”로 표현하고, 가능하면 16-strain full screening 결과를 supplementary table로 제시합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag safe">Mechanism</span></div>
+          <h3>11. EV-mediated interaction은 직접 결과인가, 문헌 기반 가설인가?</h3>
+          <div class="question">
+            교수님, Discussion에서 EV/OMV를 통한 msRNA 전달을 host-pathogen interaction mechanism으로 설명하고 있는데, 본 연구에서는 EV isolation, vesicle RNA sequencing, host-cell uptake assay, target gene validation을 직접 수행하지 않았습니다. 따라서 이 부분은 문헌 기반 mechanistic hypothesis로 명확히 제한하는 것이 맞을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> EV 기전은 논리적 설명으로 좋지만, 본 연구에서 직접 증명한 것은 아닙니다.</div>
+          <div class="response"><b>대응 방향:</b> “One plausible explanation is…”로 시작하고, future work에 EV isolation과 target validation을 제안합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag safe">Causality</span></div>
+          <h3>12. Oral leukoplakia progression을 원인처럼 해석해도 되는가?</h3>
+          <div class="question">
+            교수님, GSE62809에서 progressive oral leukoplakia lesion에서 red complex signal이 증가하는 tendency가 있었지만, 이게 malignant transformation을 유도한 원인인지, 이미 transformation-prone lesion의 inflammatory environment를 반영한 결과인지는 구분할 수 없을 것 같습니다. “contribute to”보다 “associated with transformation-prone lesions”처럼 표현하는 것이 더 안전할까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> progression group에서 signal이 높다고 causality가 입증되는 것은 아닙니다.</div>
+          <div class="response"><b>대응 방향:</b> “may be associated with malignant transformation” 수준으로 제한하고 longitudinal validation 필요성을 강조합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag safe">Prognosis</span></div>
+          <h3>13. Survival marker가 아니라고 단정해도 되는가?</h3>
+          <div class="question">
+            교수님, GSE52633에서는 favorable과 poor outcome group 사이에 차이가 없었지만 sample 수가 10 대 10이고 clinical variables도 제한되어 있습니다. 이 결과만으로 “survival marker로 기능하지 않는다”고 말하기보다는 “no evidence of survival-associated pattern in this dataset” 정도로 제한하는 것이 좋을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> 작은 dataset의 negative result만으로 biomarker 가능성을 완전히 배제할 수는 없습니다.</div>
+          <div class="response"><b>대응 방향:</b> “unlikely to serve as a robust survival marker in this dataset” 또는 “did not show a clear five-year outcome-associated pattern”을 사용합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag method">Dual RNA-seq scope</span></div>
+          <h3>14. Dual RNA-seq이라고 부를 만큼 host response를 같이 분석했는가?</h3>
+          <div class="question">
+            교수님, dual RNA-seq의 장점은 host와 microbe transcriptome을 동시에 보는 것인데, 본 연구에서는 host transcriptomic response를 함께 분석하기보다는 host-depleted bacterial read signal에 초점을 맞췄습니다. “host-microbe interaction을 분석했다”보다 “microbial RNA signals were detected within host-derived sequencing datasets” 정도가 더 정확할까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> 실제 host-side pathway나 target gene analysis가 없으므로 direct interaction analysis라고 하기 어렵습니다.</div>
+          <div class="response"><b>대응 방향:</b> “dual RNA-seq-based molecular approach” 또는 “host-depleted dual RNA-seq-based reanalysis”로 표현합니다.</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row"><span class="tag major">Major</span><span class="tag method">Visualization</span></div>
+          <h3>15. log₁₀(RPM+1) 시각화가 effect size를 왜곡하지 않는가?</h3>
+          <div class="question">
+            교수님, figure는 log₁₀(RPM+1)로 시각화되어 있어서 작은 차이가 visually 커 보이거나 outlier가 눌려 보일 수 있습니다. 실제 untransformed RPM effect size나 median difference를 함께 제시하는 것이 좋을까요?
+          </div>
+          <div class="why"><b>왜 중요한가:</b> n이 작고 p-value가 non-significant이면 p-value보다 raw RPM, median difference, effect size가 해석에 더 도움이 됩니다.</div>
+          <div class="response"><b>대응 방향:</b> supplementary table에 raw RPM median/IQR, exact p-value, FDR-adjusted p-value를 추가하는 방안을 문의합니다.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="minor">
+      <h2 class="section-title"><span class="bar"></span>보조 체크리스트: 형식보다 scientific clarity에 가까운 항목</h2>
+      <div class="card">
+        <ul>
+          <li><b>GSE246050 표기:</b> OSCC로 통일할지 HNSCC로 통일할지 확인. 원본과 Methods가 OSCC tissue comparison이면 OSCC가 더 정확할 가능성이 큼.</li>
+          <li><b>Figure 2 control:</b> “healthy controls”보다 “adjacent normal oral tissue”가 정확할 수 있음.</li>
+          <li><b>RPM 정의:</b> Methods는 raw input reads 기준인데 figure caption은 mapped reads로 되어 있으면 반드시 통일 필요.</li>
+          <li><b>Title 범위:</b> saliva와 oral leukoplakia lesion도 포함되므로 “oral cancer tissues”보다 “oral cancer-related clinical samples”가 더 정확할 수 있음.</li>
+          <li><b>5-year survival 표현:</b> “5-year survival”보다 “five-year disease-free survival” 또는 “five-year outcome-associated pattern”이 더 정확.</li>
+          <li><b>Prevention claim:</b> “periodontal management prevents oral cancer”처럼 보이지 않게, “may reduce chronic inflammatory and microbial molecular burden” 수준으로 제한.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="message">
+      <h2 class="section-title"><span class="bar"></span>교수님께 보낼 메시지 예시</h2>
+      <div class="message-box">
+        <pre>교수님, 원고를 보면서 형식보다는 분석과 해석 자체에서 몇 가지 확인하고 싶은 부분이 있습니다.
+
+첫째, 본 연구는 public human small/ncRNA-seq data를 host-depleted bacterial mapping 방식으로 재분석한 것인데, 이 데이터를 periodontal pathogen-derived msRNA detection으로 해석해도 충분히 타당한지 궁금합니다.
+
+둘째, read 길이가 짧기 때문에 bacterial genome에 perfect-match된 read가 실제 bacterial small RNA인지, 혹은 우연한 match나 contamination 가능성이 있는지 추가적으로 방어할 필요가 있을 것 같습니다.
+
+셋째, 환자들의 periodontal status가 없어서 red complex signal 증가 tendency가 OSCC 자체와 관련된 것인지, 단순히 치주염 상태를 반영한 것인지 구분하기 어려울 수 있을 것 같습니다.
+
+넷째, 모든 결과가 통계적으로 유의하지 않기 때문에 EV-mediated interaction이나 malignant transformation과의 관련성은 mechanistic hypothesis 수준으로 제한하는 것이 맞는지 확인하고 싶습니다.
+
+마지막으로 GSE176077의 PS2 high-signal sample이 saliva tendency에 영향을 줄 수 있어, PS2-excluded sensitivity analysis를 추가하는 것이 좋을지 여쭙고 싶습니다.</pre>
+      </div>
+      <p class="note">면담 시간이 짧으면 위 메시지의 5개 질문만 먼저 가져가도 충분합니다.</p>
+    </section>
+
+    <div class="footer">
+      Prepared as a discussion guide for advisor feedback on experimental validity, analysis, and interpretation.
+    </div>
+  </main>
+</body>
+</html>
